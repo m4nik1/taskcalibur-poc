@@ -3,10 +3,11 @@
 import { useRef, useState, RefObject } from "react";
 
 export default function GantGrid() {
-  const HOUR_WIDTH_PX = 80; // Pixels per hour
+  const HOUR_WIDTH_PX = 70; // Pixels per hour
   const START_HOUR_DISPLAY = 7; // Start time for the visible grid (7 AM)
-  const END_HOUR_DISPLAY = 25; // End time for the visible grid (2 AM next day, 24 + 2 = 26)
+  const END_HOUR_DISPLAY = 24; // End time for the visible grid (2 AM next day, 24 + 2 = 26)
   const TOTAL_DISPLAY_HOURS = END_HOUR_DISPLAY - START_HOUR_DISPLAY;
+  const TOTAL_DISPLAY_TIME = 20;
 
   interface Task {
     id: string;
@@ -136,7 +137,7 @@ export default function GantGrid() {
         <div
           className="flex-1 grid"
           style={{
-            gridTemplateColumns: `repeat(${TOTAL_DISPLAY_HOURS}, ${HOUR_WIDTH_PX}px)`,
+            gridTemplateColumns: `repeat(${TOTAL_DISPLAY_TIME}, ${HOUR_WIDTH_PX}px)`,
           }}
         >
           {timeLabels.map((label, index) => (
