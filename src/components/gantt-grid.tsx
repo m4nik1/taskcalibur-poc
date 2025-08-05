@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, RefObject } from "react";
 
 export default function GantGrid() {
   const HOUR_WIDTH_PX = 60; // Pixels per hour
@@ -32,17 +32,29 @@ export default function GantGrid() {
       "Nov",
       "Dec",
     ];
-    return `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}`;
+    return `${days[date.getDay()]}, ${
+      months[date.getMonth()]
+    } ${date.getDate()}`;
   }
 
   const gridRef = useRef<HTMLDivElement>(null);
+
+  function getXFromHour(
+    hour: number,
+    HOUR_WIDTH_PX: number,
+    START_HOUR_DISPLAY: number
+  ) {
+    return (hour - START_HOUR_DISPLAY) * HOUR_WIDTH_PX;
+  }
 
   const timeLabels = Array.from({ length: TOTAL_DISPLAY_HOURS + 1 }, (_, i) => {
     const hour = START_HOUR_DISPLAY + i;
     if (hour === 24) return "12AM";
     if (hour === 25) return "1AM";
     if (hour === 26) return "2AM";
-    return `${hour % 12 === 0 ? 12 : hour % 12}${hour < 12 || hour >= 24 ? "AM" : "PM"}`;
+    return `${hour % 12 === 0 ? 12 : hour % 12}${
+      hour < 12 || hour >= 24 ? "AM" : "PM"
+    }`;
   });
 
   const [tasks, setTasks] = useState<Task[]>([
@@ -76,11 +88,11 @@ export default function GantGrid() {
     },
   ]);
 
-  function getXFromHour(
+  function getHourFromX(
     clientX: number,
     gridRef: RefObject<HTMLDivElement>,
     HOUR_WIDTH_PX: number,
-    START_HOUR_DISPLAY: number,
+    START_HOUR_DISPLAY: number
   ) {
     if (!gridRef.current) return 0;
     const gridRect = gridRef.current.getBoundingClientRect();
@@ -96,7 +108,7 @@ export default function GantGrid() {
   const currentTimeLinePos = getXFromHour(
     currentHourInDay,
     HOUR_WIDTH_PX,
-    START_HOUR_DISPLAY,
+    START_HOUR_DISPLAY
   );
 
   const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 25)); // July 25, 2025
@@ -161,12 +173,21 @@ export default function GantGrid() {
             );
           }
         `}</style>
-        {tasks.map((task) => (
+        {tasks.map((task, index) => (
           <div
             key={task.id}
             data-task-id={task.id}
             className={`absolute h-8 rounded cursor-grad active:cursor-grabbing flex items-center
               justify-between px-2 text-white font-medium ${task.color}`}
+            style={{
+              left: getXFromHour(
+                task.startHour,
+                HOUR_WIDTH_PX,
+                START_HOUR_DISPLAY
+              ),
+              width: task.durationHours * HOUR_WIDTH_PX,
+              top: `${index * 40 + 10}px`,
+            }}
           >
             <span className="truncate">{task.name}</span>
             <div
