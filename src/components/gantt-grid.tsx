@@ -3,9 +3,9 @@
 import { useRef, useState, RefObject } from "react";
 
 export default function GantGrid() {
-  const HOUR_WIDTH_PX = 60; // Pixels per hour
+  const HOUR_WIDTH_PX = 80; // Pixels per hour
   const START_HOUR_DISPLAY = 7; // Start time for the visible grid (7 AM)
-  const END_HOUR_DISPLAY = 26; // End time for the visible grid (2 AM next day, 24 + 2 = 26)
+  const END_HOUR_DISPLAY = 25; // End time for the visible grid (2 AM next day, 24 + 2 = 26)
   const TOTAL_DISPLAY_HOURS = END_HOUR_DISPLAY - START_HOUR_DISPLAY;
 
   interface Task {
@@ -42,7 +42,7 @@ export default function GantGrid() {
   function getXFromHour(
     hour: number,
     HOUR_WIDTH_PX: number,
-    START_HOUR_DISPLAY: number
+    START_HOUR_DISPLAY: number,
   ) {
     return (hour - START_HOUR_DISPLAY) * HOUR_WIDTH_PX;
   }
@@ -92,7 +92,7 @@ export default function GantGrid() {
     clientX: number,
     gridRef: RefObject<HTMLDivElement>,
     HOUR_WIDTH_PX: number,
-    START_HOUR_DISPLAY: number
+    START_HOUR_DISPLAY: number,
   ) {
     if (!gridRef.current) return 0;
     const gridRect = gridRef.current.getBoundingClientRect();
@@ -108,10 +108,10 @@ export default function GantGrid() {
   const currentTimeLinePos = getXFromHour(
     currentHourInDay,
     HOUR_WIDTH_PX,
-    START_HOUR_DISPLAY
+    START_HOUR_DISPLAY,
   );
 
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 25)); // July 25, 2025
+  const [currentDate, setCurrentDate] = useState(new Date(2025, 8, 5)); // July 25, 2025
 
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
@@ -183,7 +183,7 @@ export default function GantGrid() {
               left: getXFromHour(
                 task.startHour,
                 HOUR_WIDTH_PX,
-                START_HOUR_DISPLAY
+                START_HOUR_DISPLAY,
               ),
               width: task.durationHours * HOUR_WIDTH_PX,
               top: `${index * 40 + 10}px`,
