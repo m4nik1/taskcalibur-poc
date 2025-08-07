@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@nextui-org/react";
 import { useState } from "react";
 
 interface Task {
@@ -59,45 +60,45 @@ export default function TaskList() {
   }
 
   return (
-    <div className="w-80 flex-shrink-0 bg-white border-r border-gray-900">
-      <div className="flex items-center px-4 py-3 border-b border-gray-200 dark:bg-gray-800">
+    <div className="w-80 flex-shrink-0 pt-15 bg-white border-r border-gray-200 flex flex-col">
+      <div className="flex items-center px-4 py-3 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900">Tasks</h2>
       </div>
 
-      <div className="relative bg-white">
+      <div className="flex-1 relative bg-white">
         {tasks.map((task, index) => (
           <div
-            key={task.id}
-            className="absolute left-0 right-0 flex items-center
-            gap-3 px-4 cursor-move hover:bg-gray-50 dark:hover:bg-gray-800
+            key={index}
+            className="flex items-center gap-3 px-4 cursor-move 
+            border-b border-gray-250 hover:bg-gray-50 dark:hover:bg-gray-800
             dark:border-gray-800"
-            style={{ height: "40px", top: `${index * 40}px` }}
+            style={{ height: "40px" }}
             draggable
           >
             <div
               className={`w-3 h-3 ${task.color} rounded-full flex-shrink-0`}
             ></div>
             <div className="flex-grow min-w-0">
-              <p className="text--sm font-medium text-gray-900">{task.name}</p>
-              <div className="flex items-center text-xs">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {task.name}
+              </p>
+              <div className="flex items-center text-xs text-gray-500 mt-0.5">
                 <span>{formatTime(task.startHour)}</span>
                 <span className="mx-1">-</span>
                 <span>{formatTime(task.startHour + task.durationHours)}</span>
               </div>
             </div>
+            <hr className="my-12 h-0.5 border-t-0 bg-amber-400" />
           </div>
         ))}
-        <div
-          className="absolute left-0 right-0 flex items-center gap-3 px-4
-            text-gray-400 cursor-pointer hover:text-gray-600 transition-colors border-b"
-          style={{
-            height: "40px",
-            top: `${tasks.length * 40}px`,
-          }}
+        <Button
+          className="w-full flex gap-3 px-4 text-gray-400 
+            hover-bg-gray-50 transition-colors border-b border-gray-100"
+          style={{ height: "40px" }}
         >
           <div className="w-3 h-3 border border-dashed border-gray-300 rounded-full flex-shrink-0"></div>
           <p className="text-sm">Create Task</p>
-        </div>
+        </Button>
       </div>
     </div>
   );
