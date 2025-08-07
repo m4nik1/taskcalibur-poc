@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@nextui-org/react";
+import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 
 interface Task {
@@ -43,6 +43,12 @@ export default function TaskList() {
     },
   ]);
 
+  const [draggedTaskFromList, setDraggedTaskFromList] = useState<string | null>(
+    null
+  );
+
+  const [draggedTaskIndex, setDraggedTaskIndex] = useState<number | null>(null);
+
   function formatTime(hour: number) {
     const displayHour =
       Math.floor(hour) % 12 === 0 ? 12 : Math.floor(hour) % 12;
@@ -74,10 +80,39 @@ export default function TaskList() {
             dark:border-gray-800"
             style={{ height: "40px" }}
             draggable
+            onDragStart={(e) => {
+              setDraggedTaskFromList(task.id);
+              setDraggedTaskIndex(index);
+              e.dataTransfer.effectAllowed = "move";
+              e.dataTransfer.setData("text/plain", index.toString());
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = "move";
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              const dropIndex = Number.parseInt(
+                e.dataTransfer.getData("text/plain"),
+                10
+              );
+              if (dropIndex != index) {
+                const newTasks = [...tasks];
+                const [movedTask] = newTasks.splice(dropIndex, 1);
+                newTasks.splice(index, 0, movedTask);
+                setTasks(newTasks);
+              }
+              setDraggedTaskIndex(null);
+            }}
+            onDragEnd={() => {
+              setDraggedTaskFromList(null);
+              setDraggedTaskIndex(null);
+            }}
           >
-            <div
-              className={`w-3 h-3 ${task.color} rounded-full flex-shrink-0`}
-            ></div>
+            <input
+              type="checkbox"
+              className="w-3 h-3 border border-dashed border-gray-300 rounded-full flex-shrink-0"
+            />
             <div className="flex-grow min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
                 {task.name}
