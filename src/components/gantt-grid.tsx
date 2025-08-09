@@ -1,21 +1,18 @@
 "use client";
 
 import { useRef, useState, RefObject } from "react";
+import { Task } from "../../types";
 
-export default function GantGrid() {
+interface gantGridProps {
+  setTasks: React.SetStateAction<[Task[]]>;
+}
+
+export default function GantGrid({ setTasks }: gantGridProps) {
   const HOUR_WIDTH_PX = 70; // Pixels per hour
   const START_HOUR_DISPLAY = 7; // Start time for the visible grid (7 AM)
   const END_HOUR_DISPLAY = 24; // End time for the visible grid (2 AM next day, 24 + 2 = 26)
   const TOTAL_DISPLAY_HOURS = END_HOUR_DISPLAY - START_HOUR_DISPLAY;
   const TOTAL_DISPLAY_TIME = 20;
-
-  interface Task {
-    id: string;
-    name: string;
-    startHour: number;
-    durationHours: number;
-    color: string;
-  }
 
   function formatDate(date: Date) {
     const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -57,37 +54,6 @@ export default function GantGrid() {
       hour < 12 || hour >= 24 ? "AM" : "PM"
     }`;
   });
-
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      name: "Team Standup",
-      startHour: 9,
-      durationHours: 0.5,
-      color: "bg-blue-500",
-    },
-    {
-      id: "2",
-      name: "Project Review",
-      startHour: 14,
-      durationHours: 1,
-      color: "bg-green-500",
-    },
-    {
-      id: "3",
-      name: "Client Call",
-      startHour: 16.5,
-      durationHours: 1,
-      color: "bg-yellow-500",
-    },
-    {
-      id: "4",
-      name: "Code Review",
-      startHour: 11,
-      durationHours: 2,
-      color: "bg-purple-500",
-    },
-  ]);
 
   function getHourFromX(
     clientX: number,
@@ -158,6 +124,25 @@ export default function GantGrid() {
         onDragOver={(e) => {
           e.preventDefault();
           e.dataTransfer.dropEffect = "move";
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          if (draggedTaskFromList) {
+            const dropHour = getHourFromX(
+              e.clientX,
+              gridRef,
+              HOUR_WIDTH_PX,
+              START_HOUR_DISPLAY
+            );
+            setTasks((prevTasks) => {
+              prevTasks.map((task) =>
+                task.id === draggedTaskFromListState
+                  ? { ...task, startHour: dropHour }
+                  : task
+              );
+            });
+            setDraggedTaskFromList(null);
+          }
         }}
         style={{
           minWidth: `${TOTAL_DISPLAY_HOURS * HOUR_WIDTH_PX}px`,
