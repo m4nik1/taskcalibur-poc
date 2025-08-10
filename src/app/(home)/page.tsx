@@ -1,9 +1,15 @@
-import { useState } from "react";
+"use client";
+
+import { useRef, useState } from "react";
 import GantGrid from "@/components/gantt-grid";
 import TaskList from "@/components/TaskList";
 import { Task } from "../../../types";
 
 export default function HomePage() {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [draggedTask, setDraggedTask] = useState<string | null>(null);
+  const [draggedTaskIndex, setDraggedTaskIndex] = useState<number | null>(null);
+
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: "1",
@@ -38,9 +44,15 @@ export default function HomePage() {
   return (
     <div className="flex h-screen">
       <div className="flex-1 flex bg-gray-50">
-        <TaskList />
+        <TaskList
+          tasks={tasks}
+          setTasks={setTasks}
+          setDraggedTask={setDraggedTask}
+          setDraggedTaskIndex={setDraggedTaskIndex}
+          dragStartInfo={dragStartInfo}
+        />
 
-        <GantGrid setTasks={setTasks} />
+        <GantGrid setTasks={setTasks} tasks={tasks} gridRef={gridRef} />
       </div>
     </div>
   );

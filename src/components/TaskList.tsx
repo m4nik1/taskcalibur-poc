@@ -1,54 +1,22 @@
 "use client";
 
-import { Button, Input } from "@nextui-org/react";
-import { useState } from "react";
+import { SetStateAction } from "react";
+import { Task } from "../../types";
 
-interface Task {
-  id: string;
-  name: string;
-  startHour: number;
-  durationHours: number;
-  color: string;
+interface TaskListProps {
+  tasks: Task[];
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  setDraggedTask: (id: string | null) => void;
+  setDraggedTaskIndex: (index: number | null) => void;
+  dragStartInfo: React.Dispatch<SetStateAction<Task[]>>;
 }
 
-export default function TaskList() {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      name: "Team Standup",
-      startHour: 9,
-      durationHours: 0.5,
-      color: "bg-blue-500",
-    },
-    {
-      id: "2",
-      name: "Project Review",
-      startHour: 14,
-      durationHours: 1,
-      color: "bg-green-500",
-    },
-    {
-      id: "3",
-      name: "Client Call",
-      startHour: 16.5,
-      durationHours: 1,
-      color: "bg-yellow-500",
-    },
-    {
-      id: "4",
-      name: "Code Review",
-      startHour: 11,
-      durationHours: 2,
-      color: "bg-purple-500",
-    },
-  ]);
-
-  const [draggedTaskFromList, setDraggedTaskFromList] = useState<string | null>(
-    null
-  );
-
-  const [draggedTaskIndex, setDraggedTaskIndex] = useState<number | null>(null);
-
+export default function TaskList({
+  tasks,
+  setTasks,
+  setDraggedTask,
+  setDraggedTaskIndex,
+}: TaskListProps) {
   function formatTime(hour: number) {
     const displayHour =
       Math.floor(hour) % 12 === 0 ? 12 : Math.floor(hour) % 12;
@@ -75,13 +43,13 @@ export default function TaskList() {
         {tasks.map((task, index) => (
           <div
             key={index}
-            className="flex items-center gap-3 px-4 cursor-move 
+            className="flex items-center gap-3 px-4 cursor-move
             border-b border-gray-250 hover:bg-gray-50 dark:hover:bg-gray-800
             dark:border-gray-800"
             style={{ height: "40px" }}
             draggable
             onDragStart={(e) => {
-              setDraggedTaskFromList(task.id);
+              setDraggedTask(task.id);
               setDraggedTaskIndex(index);
               e.dataTransfer.effectAllowed = "move";
               e.dataTransfer.setData("text/plain", index.toString());
@@ -94,7 +62,7 @@ export default function TaskList() {
               e.preventDefault();
               const dropIndex = Number.parseInt(
                 e.dataTransfer.getData("text/plain"),
-                10
+                10,
               );
               if (dropIndex != index) {
                 const newTasks = [...tasks];
@@ -105,7 +73,7 @@ export default function TaskList() {
               setDraggedTaskIndex(null);
             }}
             onDragEnd={() => {
-              setDraggedTaskFromList(null);
+              setDraggedTask(null);
               setDraggedTaskIndex(null);
             }}
           >
@@ -126,14 +94,14 @@ export default function TaskList() {
             <hr className="my-12 h-0.5 border-t-0 bg-amber-400" />
           </div>
         ))}
-        <Button
-          className="w-full flex gap-3 px-4 text-gray-400 
+        <button
+          className="w-full flex gap-3 px-4 text-gray-400
             hover-bg-gray-50 transition-colors border-b border-gray-100"
           style={{ height: "40px" }}
         >
           <div className="w-3 h-3 border border-dashed border-gray-300 rounded-full flex-shrink-0"></div>
           <p className="text-sm">Create Task</p>
-        </Button>
+        </button>
       </div>
     </div>
   );

@@ -1,13 +1,23 @@
 "use client";
 
-import { useRef, useState, RefObject } from "react";
+import { useState, RefObject } from "react";
 import { Task } from "../../types";
 
 interface gantGridProps {
-  setTasks: React.SetStateAction<[Task[]]>;
+  setTasks: React.SetStateAction<Task[]>;
+  tasks: Task[];
+  gridRef: RefObject<HTMLDivElement>;
+  handleMouseDown: (e: React.MouseEvent) => void;
+  draggedTaskFromList: string | null;
 }
 
-export default function GantGrid({ setTasks }: gantGridProps) {
+export default function GantGrid({
+  setTasks,
+  tasks,
+  gridRef,
+  handleMouseDown,
+  draggedTaskFromList,
+}: gantGridProps) {
   const HOUR_WIDTH_PX = 70; // Pixels per hour
   const START_HOUR_DISPLAY = 7; // Start time for the visible grid (7 AM)
   const END_HOUR_DISPLAY = 24; // End time for the visible grid (2 AM next day, 24 + 2 = 26)
@@ -35,12 +45,12 @@ export default function GantGrid({ setTasks }: gantGridProps) {
     } ${date.getDate()}`;
   }
 
-  const gridRef = useRef<HTMLDivElement>(null);
+  // const gridRef = useRef<HTMLDivElement>(null);
 
   function getXFromHour(
     hour: number,
     HOUR_WIDTH_PX: number,
-    START_HOUR_DISPLAY: number
+    START_HOUR_DISPLAY: number,
   ) {
     return (hour - START_HOUR_DISPLAY) * HOUR_WIDTH_PX;
   }
@@ -59,7 +69,7 @@ export default function GantGrid({ setTasks }: gantGridProps) {
     clientX: number,
     gridRef: RefObject<HTMLDivElement>,
     HOUR_WIDTH_PX: number,
-    START_HOUR_DISPLAY: number
+    START_HOUR_DISPLAY: number,
   ) {
     if (!gridRef.current) return 0;
     const gridRect = gridRef.current.getBoundingClientRect();
@@ -75,10 +85,13 @@ export default function GantGrid({ setTasks }: gantGridProps) {
   const currentTimeLinePos = getXFromHour(
     currentHourInDay,
     HOUR_WIDTH_PX,
-    START_HOUR_DISPLAY
+    START_HOUR_DISPLAY,
   );
 
   const [currentDate, setCurrentDate] = useState(new Date(2025, 8, 5));
+  const [draggedTaskFromList, setDraggedTaskFromList] = useState<string | null>(
+    null,
+  );
 
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
@@ -121,6 +134,7 @@ export default function GantGrid({ setTasks }: gantGridProps) {
       <div
         ref={gridRef}
         className="flex-1 relative overflow-auto bg-white"
+        onMouseDown={handleMouseDown}
         onDragOver={(e) => {
           e.preventDefault();
           e.dataTransfer.dropEffect = "move";
@@ -132,13 +146,13 @@ export default function GantGrid({ setTasks }: gantGridProps) {
               e.clientX,
               gridRef,
               HOUR_WIDTH_PX,
-              START_HOUR_DISPLAY
+              START_HOUR_DISPLAY,
             );
             setTasks((prevTasks) => {
               prevTasks.map((task) =>
-                task.id === draggedTaskFromListState
+                task.id === draggedTaskFromList
                   ? { ...task, startHour: dropHour }
-                  : task
+                  : task,
               );
             });
             setDraggedTaskFromList(null);
@@ -169,7 +183,7 @@ export default function GantGrid({ setTasks }: gantGridProps) {
               left: getXFromHour(
                 task.startHour,
                 HOUR_WIDTH_PX,
-                START_HOUR_DISPLAY
+                START_HOUR_DISPLAY,
               ),
               width: task.durationHours * HOUR_WIDTH_PX,
               top: `${index * 40 + 10}px`,
