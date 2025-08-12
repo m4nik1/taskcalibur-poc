@@ -8,7 +8,7 @@ interface TaskListProps {
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
   setDraggedTask: (id: string | null) => void;
   setDraggedTaskIndex: (index: number | null) => void;
-  dragStartInfo: React.Dispatch<SetStateAction<Task[]>>;
+  dragStartInfo: { taskId: string | null }| null
 }
 
 export default function TaskList({

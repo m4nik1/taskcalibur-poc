@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, RefObject } from "react";
+import { useState, RefObject, SetStateAction } from "react";
 import { Task } from "../../types";
+import { getHourFromX } from "@/lib/utils";
 
 interface gantGridProps {
-  setTasks: React.SetStateAction<Task[]>;
+  setTasks: React.Dispatch<SetStateAction<Task[]>>;
   tasks: Task[];
   gridRef: RefObject<HTMLDivElement>;
   handleMouseDown: (e: React.MouseEvent) => void;
-  draggedTaskFromList: string | null;
+  dragStartInfo: { taskId: string | null } | null;
+  draggedTask: string | null;
 }
 
 export default function GantGrid({
@@ -16,7 +18,6 @@ export default function GantGrid({
   tasks,
   gridRef,
   handleMouseDown,
-  draggedTaskFromList,
 }: gantGridProps) {
   const HOUR_WIDTH_PX = 70; // Pixels per hour
   const START_HOUR_DISPLAY = 7; // Start time for the visible grid (7 AM)
@@ -40,17 +41,14 @@ export default function GantGrid({
       "Nov",
       "Dec",
     ];
-    return `${days[date.getDay()]}, ${
-      months[date.getMonth()]
-    } ${date.getDate()}`;
+    return `${days[date.getDay()]}, ${months[date.getMonth()]
+      } ${date.getDate()}`;
   }
-
-  // const gridRef = useRef<HTMLDivElement>(null);
 
   function getXFromHour(
     hour: number,
     HOUR_WIDTH_PX: number,
-    START_HOUR_DISPLAY: number,
+    START_HOUR_DISPLAY: number
   ) {
     return (hour - START_HOUR_DISPLAY) * HOUR_WIDTH_PX;
   }
@@ -60,22 +58,9 @@ export default function GantGrid({
     if (hour === 24) return "12AM";
     if (hour === 25) return "1AM";
     if (hour === 26) return "2AM";
-    return `${hour % 12 === 0 ? 12 : hour % 12}${
-      hour < 12 || hour >= 24 ? "AM" : "PM"
-    }`;
+    return `${hour % 12 === 0 ? 12 : hour % 12}${hour < 12 || hour >= 24 ? "AM" : "PM"
+      }`;
   });
-
-  function getHourFromX(
-    clientX: number,
-    gridRef: RefObject<HTMLDivElement>,
-    HOUR_WIDTH_PX: number,
-    START_HOUR_DISPLAY: number,
-  ) {
-    if (!gridRef.current) return 0;
-    const gridRect = gridRef.current.getBoundingClientRect();
-    const xInGrid = clientX - gridRect.left;
-    return START_HOUR_DISPLAY + xInGrid / HOUR_WIDTH_PX;
-  }
 
   const currentTime = new Date();
 
@@ -85,13 +70,11 @@ export default function GantGrid({
   const currentTimeLinePos = getXFromHour(
     currentHourInDay,
     HOUR_WIDTH_PX,
-    START_HOUR_DISPLAY,
+    START_HOUR_DISPLAY
   );
 
   const [currentDate, setCurrentDate] = useState(new Date(2025, 8, 5));
-  const [draggedTaskFromList, setDraggedTaskFromList] = useState<string | null>(
-    null,
-  );
+  const [draggedTaskState, setDraggedTaskState] = useState<string | null>(null);
 
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
@@ -117,6 +100,7 @@ export default function GantGrid({
           className="flex-1 grid"
           style={{
             gridTemplateColumns: `repeat(${TOTAL_DISPLAY_TIME}, ${HOUR_WIDTH_PX}px)`,
+            minWidth: `${TOTAL_DISPLAY_HOURS * HOUR_WIDTH_PX}px`, // Ensure minimum width
           }}
         >
           {timeLabels.map((label, index) => (
@@ -141,21 +125,21 @@ export default function GantGrid({
         }}
         onDrop={(e) => {
           e.preventDefault();
-          if (draggedTaskFromList) {
+          if (draggedTaskState) {
             const dropHour = getHourFromX(
               e.clientX,
               gridRef,
               HOUR_WIDTH_PX,
-              START_HOUR_DISPLAY,
+              START_HOUR_DISPLAY
             );
-            setTasks((prevTasks) => {
+            setTasks((prevTasks) =>
               prevTasks.map((task) =>
-                task.id === draggedTaskFromList
+                task.id === draggedTaskState
                   ? { ...task, startHour: dropHour }
-                  : task,
-              );
-            });
-            setDraggedTaskFromList(null);
+                  : task
+              )
+            );
+            setDraggedTaskState(null);
           }
         }}
         style={{
@@ -183,7 +167,7 @@ export default function GantGrid({
               left: getXFromHour(
                 task.startHour,
                 HOUR_WIDTH_PX,
-                START_HOUR_DISPLAY,
+                START_HOUR_DISPLAY
               ),
               width: task.durationHours * HOUR_WIDTH_PX,
               top: `${index * 40 + 10}px`,
@@ -204,6 +188,7 @@ export default function GantGrid({
             style={{ top: `${i * 40 + 40}px` }}
           ></div>
         ))}
+
         <div
           className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-10"
           style={{ left: currentTimeLinePos }}

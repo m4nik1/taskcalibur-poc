@@ -1,30 +1,52 @@
 "use client";
 
-import type React from "react";
+import { useState, type RefObject, useCallback, useEffect } from "react";
+import { Task } from "../types";
+import { getHourFromX } from "@/lib/utils";
 
-import { useState, useEffect, type RefObject, useCallback } from "react";
+interface DragStartInfo {
+  startX: number;
+  startHour: number;
+  taskId: string | null;
+  isResizing: boolean;
+  initialDuration?: number;
+  initialStartHour?: number;
+}
 
-interface DragStartInfo {}
+interface UseGanttDragProps {
+  tasks: Task[];
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  gridRef: RefObject<HTMLDivElement>;
+  HOUR_WIDTH_PX: number;
+  START_HOUR_DISPLAY: number;
+}
 
-export function useGanttDrag() {
+export function useGanttDrag({
+  tasks,
+  setTasks,
+  gridRef,
+  HOUR_WIDTH_PX,
+  START_HOUR_DISPLAY,
+}: UseGanttDragProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartInfo, setDragStartInfo] = useState<DragStartInfo | null>(
-    null,
+    null
   );
+  const [tempTask, setTempTask] = useState<Omit<Task, "id"> | null>(null);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if(e.button !== 0) return
+      if (e.button !== 0) return;
 
-      const target = e.target as HTMLElement
-      const taskId = target.dataset.taskId
-      const isResizer = target.classList.contains("task-resizer")
+      const target = e.target as HTMLElement;
+      const taskId = target.dataset.taskId;
+      const isResizer = target.classList.contains("task-resizer");
 
       if (taskId && gridRef.current) {
-        const task = tasks.find((t) => t.id == taskId)
+        const task = tasks.find((t) => t.id == taskId);
 
-        if(task) {
-          setIsDragging(true)
+        if (task) {
+          setIsDragging(true);
           setDragStartInfo({
             startX: e.clientX,
             startHour: task.startHour, // Initial start hour of the task
@@ -32,11 +54,15 @@ export function useGanttDrag() {
             isResizing: isResizer,
             initialDuration: task.durationHours,
             initialStartHour: task.startHour,
-          })
+          });
         }
-      }
-      else if (gridRef.current) {
-        const startHour = getHourFromX(e.clientX, gridRef, HOUR_WIDTH_PX, START_HOUR_DISPLAY)
+      } else if (gridRef.current) {
+        const startHour = getHourFromX(
+          e.clientX,
+          gridRef,
+          HOUR_WIDTH_PX,
+          START_HOUR_DISPLAY
+        );
 
         // setTempTask({
         //   name: "New Task",
@@ -44,14 +70,75 @@ export function useGanttDrag() {
         //   durationHours: 0.5,
         //   color: "bg-gray-500"
         // })
-        setIsDragging(true)
+        setIsDragging(true);
         setDragStartInfo({
           startX: e.clientX,
           startHour: startHour,
           taskId: null, // Indicates new task creation
           isResizing: false,
-        })
+        });
       }
     },
     [tasks, gridRef, HOUR_WIDTH_PX, START_HOUR_DISPLAY]
+  );
+
+  const handleMouseUp = useCallback(() => {
+    if (isDragging && dragStartInfo) {
+      if (dragStartInfo.taskId === null && tempTask) {
+        setTasks((prevTasks) => [
+          ...prevTasks,
+          { ...tempTask, id: Date.now.toString() },
+        ]);
+      }
+      setIsDragging(false);
+      setDragStartInfo(null);
+      setTempTask(null);
+    }
+  }, [isDragging, dragStartInfo, tempTask, setTasks]);
+
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if(!isDragging || !dragStartInfo || !gridRef.current) return
+
+      const currentHour = getHourFromX(e.clientX, gridRef, HOUR_WIDTH_PX, START_HOUR_DISPLAY)
+
+      if(dragStartInfo.taskId === null) {
+        // if(tempTask) {
+        //   const newDuration = Math.max(0.5, currentHour - tempTask.startHour)
+        //   setTempTask((prev) => (prev ? { ...prev, durationHours: newDuration } : null))
+        // }
+      } else {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) => {
+            if (task.id === dragStartInfo.taskId) {
+              if (dragStartInfo.isResizing) {
+                // Resizing from the right edge
+                const newDuration = Math.max(0.5, currentHour - task.startHour)
+                return { ...task, durationHours: newDuration }
+              } else {
+                // Moving the task
+                const deltaX = e.clientX - dragStartInfo.startX
+                const deltaHours = deltaX / HOUR_WIDTH_PX
+                const newStartHour = dragStartInfo.initialStartHour! + deltaHours
+                return { ...task, startHour: newStartHour }
+              }
+            }
+            return task
+          }),
+        )
+      }
+    },
+    [isDragging, dragStartInfo, tempTask, tasks, setTasks, gridRef, HOUR_WIDTH_PX, START_HOUR_DISPLAY]
+  )
+
+  useEffect(() => {
+    document.addEventListener("mousemove", handleMouseMove)
+    document.addEventListener("mouseup", handleMouseUp)
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove)
+      document.removeEventListener("mouseup", handleMouseUp)
+    }
+  }, [handleMouseMove, handleMouseUp])
+
+  return { isDragging, dragStartInfo, tempTask, handleMouseDown };
 }
