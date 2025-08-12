@@ -29,10 +29,6 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
     setDraggedTaskIndex(null);
   }
 
-  function completeTaskAction() {
-    
-  }
-
   return (
     <div
       className="flex items-center gap-3 px-4 cursor-move
