@@ -24,7 +24,7 @@ export default function GantTask({ task, index }: GantTaskProps) {
                 top: `${index * 40 + 10}px`,
             }}
         >
-            <span className="truncate">{task.name}</span>
+            <span className="truncate select-none">{task.name}</span>
             <div
                 className="task-resizer w-3 h-full cursor-ew-resize absolute right-0 top-0"
                 data-task-id={task.id}

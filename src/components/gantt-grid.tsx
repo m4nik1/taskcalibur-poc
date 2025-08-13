@@ -74,6 +74,8 @@ export default function GantGrid({
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
       {/* Date Navi */}
       <DateNavigation currentDate={currentDate} />
+
+      { /* Time Labels */ }
       <div className="flex border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800">
         <div
           className="flex-1 grid"
@@ -124,7 +126,7 @@ export default function GantGrid({
 
         {Array.from({ length: tasks.length + 10 }, (_, i) => (
           <div
-            key={`row-line-${i}`}
+            key={i}
             className="absolute left-0 right-0 border-b border-gray-100"
             style={{ top: `${i * 40 + 40}px` }}
           ></div>

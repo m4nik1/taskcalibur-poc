@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Task } from "../../types";
 import { formatTime } from "@/lib/utils"
 
@@ -13,6 +13,7 @@ interface TaskItemProps {
 
 export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, tasks, index, setTasks }: TaskItemProps) {
   const [completeCheck, setCheck] = useState(false);
+  const taskName = useRef(task.name);
 
   function taskComplete(complete: boolean) {
     const newTasks = [...tasks];
@@ -20,6 +21,20 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
     newTasks.splice(index, 1, task);
     setTasks(newTasks)
     setCheck(complete);
+  }
+
+  function setTaskName() {
+    console.log(taskName)
+    console.log(e)
+  }
+
+  function confirmTask(e) {
+    if(e.code == "Enter") {
+      const newTasks = [...tasks]
+      task.name = taskName.current.value
+      newTasks.splice(index, 1, task);
+      setTasks(newTasks)
+    }
   }
 
   function onTaskDrop(e: React.DragEvent<HTMLDivElement>) {
@@ -65,9 +80,10 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
         className="w-3 h-3 border border-dashed border-gray-300 rounded-full flex-shrink-0"
       />
       <div className="flex-grow min-w-0">
-        <p className={`text-sm font-medium text-gray-900 truncate ${completeCheck ? 'line-through' : ''}`}>
+        {/* <Input className={`text-sm font-medium text-gray-900 truncate ${completeCheck ? 'line-through' : ''}`}>
           {task.name}
-        </p>
+        </Input> */}
+        <input className="text-sm font-medium text-gray-900 truncate" onKeyDown={confirmTask} placeholder="New Task" defaultValue={task.name} ref={taskName}  />
         <div className="flex items-center text-xs text-gray-500 mt-0.5">
           <span>{formatTime(task.startHour)}</span>
           <span className="mx-1">-</span>
