@@ -12,7 +12,7 @@ export default function GantTask({ task, index }: GantTaskProps) {
     return (
         <div
             data-task-id={task.id}
-            className={`absolute h-8 rounded cursor-grad active:cursor-grabbing flex items-center
+            className={`absolute h-8 rounded active:cursor-grabbing flex items-center
               justify-between px-2 text-white font-medium ${task.color}`}
             style={{
                 left: getXFromHour(
@@ -24,7 +24,7 @@ export default function GantTask({ task, index }: GantTaskProps) {
                 top: `${index * 40 + 10}px`,
             }}
         >
-            <span className="truncate select-none">{task.name}</span>
+            <span className="truncate pointer-events-none select-none">{task.name}</span>
             <div
                 className="task-resizer w-3 h-full cursor-ew-resize absolute right-0 top-0"
                 data-task-id={task.id}

@@ -23,11 +23,6 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
     setCheck(complete);
   }
 
-  function setTaskName() {
-    console.log(taskName)
-    console.log(e)
-  }
-
   function confirmTask(e) {
     if(e.code == "Enter") {
       const newTasks = [...tasks]
@@ -80,10 +75,7 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
         className="w-3 h-3 border border-dashed border-gray-300 rounded-full flex-shrink-0"
       />
       <div className="flex-grow min-w-0">
-        {/* <Input className={`text-sm font-medium text-gray-900 truncate ${completeCheck ? 'line-through' : ''}`}>
-          {task.name}
-        </Input> */}
-        <input className="text-sm font-medium text-gray-900 truncate" onKeyDown={confirmTask} placeholder="New Task" defaultValue={task.name} ref={taskName}  />
+        <input className={`text-sm font-medium text-gray-900 truncate ${completeCheck ? 'line-through' : ''}`} onKeyDown={confirmTask} placeholder="New Task" defaultValue={task.name} ref={taskName}  />
         <div className="flex items-center text-xs text-gray-500 mt-0.5">
           <span>{formatTime(task.startHour)}</span>
           <span className="mx-1">-</span>
