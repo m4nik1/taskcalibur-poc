@@ -14,6 +14,14 @@ interface TaskItemProps {
 export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, tasks, index, setTasks }: TaskItemProps) {
   const [completeCheck, setCheck] = useState(false);
 
+  function taskComplete(complete: boolean) {
+    const newTasks = [...tasks];
+    task.color = complete ? 'bg-green-500' : 'bg-blue-500'
+    newTasks.splice(index, 1, task);
+    setTasks(newTasks)
+    setCheck(complete);
+  }
+
   function onTaskDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     const dropIndex = Number.parseInt(
@@ -32,8 +40,7 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
   return (
     <div
       className="flex items-center gap-3 px-4 cursor-move
-            border-b border-gray-250 hover:bg-gray-50 dark:hover:bg-gray-800
-            dark:border-gray-800"
+            border-b border-gray-250 hover:bg-gray-50"
       style={{ height: "40px" }}
       draggable
       onDragStart={(e) => {
@@ -54,7 +61,7 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
     >
       <input
         type="checkbox"
-        onChange={(e) => setCheck(e.target.value)}
+        onChange={(e) => taskComplete(e.target.checked)}
         className="w-3 h-3 border border-dashed border-gray-300 rounded-full flex-shrink-0"
       />
       <div className="flex-grow min-w-0">

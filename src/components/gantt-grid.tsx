@@ -2,7 +2,9 @@
 
 import { useState, RefObject, SetStateAction } from "react";
 import { Task } from "../../types";
-import { getHourFromX } from "@/lib/utils";
+import { getHourFromX, getXFromHour } from "@/lib/utils";
+import GantTask from "./gantTasks";
+import DateNavigation from "./DateNavigation";
 
 interface gantGridProps {
   setTasks: React.Dispatch<SetStateAction<Task[]>>;
@@ -25,34 +27,6 @@ export default function GantGrid({
   const TOTAL_DISPLAY_HOURS = END_HOUR_DISPLAY - START_HOUR_DISPLAY;
   const TOTAL_DISPLAY_TIME = 20;
 
-  function formatDate(date: Date) {
-    const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    return `${days[date.getDay()]}, ${months[date.getMonth()]
-      } ${date.getDate()}`;
-  }
-
-  function getXFromHour(
-    hour: number,
-    HOUR_WIDTH_PX: number,
-    START_HOUR_DISPLAY: number
-  ) {
-    return (hour - START_HOUR_DISPLAY) * HOUR_WIDTH_PX;
-  }
-
   const timeLabels = Array.from({ length: TOTAL_DISPLAY_HOURS + 1 }, (_, i) => {
     const hour = START_HOUR_DISPLAY + i;
     if (hour === 24) return "12AM";
@@ -73,28 +47,33 @@ export default function GantGrid({
     START_HOUR_DISPLAY
   );
 
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 8, 5));
+  function gridDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    if (draggedTaskState) {
+      const dropHour = getHourFromX(
+        e.clientX,
+        gridRef,
+        HOUR_WIDTH_PX,
+        START_HOUR_DISPLAY
+      );
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === draggedTaskState
+            ? { ...task, startHour: dropHour }
+            : task
+        )
+      );
+      setDraggedTaskState(null);
+    }
+  }
+
+  const [currentDate, setCurrentDate] = useState(new Date);
   const [draggedTaskState, setDraggedTaskState] = useState<string | null>(null);
 
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
       {/* Date Navi */}
-      <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
-        <div>
-          <div className="bg-black text-white px-2 py-1 rounded text-sm font-medium ease-out">
-            {formatDate(currentDate)}
-          </div>
-          <button className="p-1 hover-bg-gray-200 rounded">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor">
-              <path
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 101-7-7 7-7"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
+      <DateNavigation currentDate={currentDate} />
       <div className="flex border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800">
         <div
           className="flex-1 grid"
@@ -123,25 +102,7 @@ export default function GantGrid({
           e.preventDefault();
           e.dataTransfer.dropEffect = "move";
         }}
-        onDrop={(e) => {
-          e.preventDefault();
-          if (draggedTaskState) {
-            const dropHour = getHourFromX(
-              e.clientX,
-              gridRef,
-              HOUR_WIDTH_PX,
-              START_HOUR_DISPLAY
-            );
-            setTasks((prevTasks) =>
-              prevTasks.map((task) =>
-                task.id === draggedTaskState
-                  ? { ...task, startHour: dropHour }
-                  : task
-              )
-            );
-            setDraggedTaskState(null);
-          }
-        }}
+        onDrop={(e) => gridDrop(e)}
         style={{
           minWidth: `${TOTAL_DISPLAY_HOURS * HOUR_WIDTH_PX}px`,
           backgroundSize: `${HOUR_WIDTH_PX}px 100%`,
@@ -158,27 +119,7 @@ export default function GantGrid({
           }
         `}</style>
         {tasks.map((task, index) => (
-          <div
-            key={task.id}
-            data-task-id={task.id}
-            className={`absolute h-8 rounded cursor-grad active:cursor-grabbing flex items-center
-              justify-between px-2 text-white font-medium ${task.color}`}
-            style={{
-              left: getXFromHour(
-                task.startHour,
-                HOUR_WIDTH_PX,
-                START_HOUR_DISPLAY
-              ),
-              width: task.durationHours * HOUR_WIDTH_PX,
-              top: `${index * 40 + 10}px`,
-            }}
-          >
-            <span className="truncate">{task.name}</span>
-            <div
-              className="task-resizer w-3 h-full cursor-ew-resize absolute right-0 top-0"
-              data-task-id={task.id}
-            ></div>
-          </div>
+          <GantTask key={index} task={task} index={index} />
         ))}
 
         {Array.from({ length: tasks.length + 10 }, (_, i) => (
