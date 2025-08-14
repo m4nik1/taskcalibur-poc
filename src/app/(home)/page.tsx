@@ -54,6 +54,7 @@ export default function HomePage() {
       gridRef,
       HOUR_WIDTH_PX,
       START_HOUR_DISPLAY,
+      END_HOUR_DISPLAY,
     }
   );
 

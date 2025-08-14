@@ -75,7 +75,7 @@ export default function GantGrid({
       {/* Date Navi */}
       <DateNavigation currentDate={currentDate} />
 
-      { /* Time Labels */ }
+      { /* Time Labels */}
       <div className="flex border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800">
         <div
           className="flex-1 grid"

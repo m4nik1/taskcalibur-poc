@@ -19,6 +19,7 @@ interface UseGanttDragProps {
   gridRef: RefObject<HTMLDivElement>;
   HOUR_WIDTH_PX: number;
   START_HOUR_DISPLAY: number;
+  END_HOUR_DISPLAY: number;
 }
 
 export function useGanttDrag({
@@ -27,6 +28,7 @@ export function useGanttDrag({
   gridRef,
   HOUR_WIDTH_PX,
   START_HOUR_DISPLAY,
+  END_HOUR_DISPLAY,
 }: UseGanttDragProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartInfo, setDragStartInfo] = useState<DragStartInfo | null>(
@@ -112,14 +114,25 @@ export function useGanttDrag({
           prevTasks.map((task) => {
             if (task.id === dragStartInfo.taskId) {
               if (dragStartInfo.isResizing) {
-                // Resizing from the right edge
-                const newDuration = Math.max(0.5, currentHour - task.startHour)
+                // Resizing from the right edge - constrain end time
+                const maxEndHour = END_HOUR_DISPLAY
+                const newDuration = Math.max(0.5, Math.min(currentHour - task.startHour, maxEndHour - task.startHour))
                 return { ...task, durationHours: newDuration }
               } else {
-                // Moving the task
+                // Moving the task - constrain within grid boundaries
                 const deltaX = e.clientX - dragStartInfo.startX
                 const deltaHours = deltaX / HOUR_WIDTH_PX
-                const newStartHour = dragStartInfo.initialStartHour! + deltaHours
+                let newStartHour = dragStartInfo.initialStartHour! + deltaHours
+                
+                // Constrain start hour to not go before START_HOUR_DISPLAY
+                newStartHour = Math.max(START_HOUR_DISPLAY, newStartHour)
+                
+                // Constrain end hour to not go beyond END_HOUR_DISPLAY
+                const taskEndHour = newStartHour + task.durationHours
+                if (taskEndHour > END_HOUR_DISPLAY) {
+                  newStartHour = END_HOUR_DISPLAY - task.durationHours
+                }
+                
                 return { ...task, startHour: newStartHour }
               }
             }
@@ -128,7 +141,7 @@ export function useGanttDrag({
         )
       }
     },
-    [isDragging, dragStartInfo, tempTask, tasks, setTasks, gridRef, HOUR_WIDTH_PX, START_HOUR_DISPLAY]
+    [isDragging, dragStartInfo, tempTask, tasks, setTasks, gridRef, HOUR_WIDTH_PX, START_HOUR_DISPLAY, END_HOUR_DISPLAY]
   )
 
   useEffect(() => {
