@@ -13,3 +13,12 @@ model playing_with_neon {
   name  String
   value Float? @db.Real
 }
+
+model userTasks {
+  id        Int      @id @default(autoincrement())
+  name      String
+  status    String
+  startTime DateTime
+  Duration  Int
+  EndTime   DateTime
+}
