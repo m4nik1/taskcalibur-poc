@@ -1,13 +1,13 @@
 import { useRef, useState } from "react";
-import { Task } from "../../types";
+import { Task, TaskDB } from "../../types";
 import { formatTime } from "@/lib/utils"
 
 interface TaskItemProps {
-  setDraggedTask: (id: string | null) => void;
+  setDraggedTask: (id: number | null) => void;
   setDraggedTaskIndex: (index: number | null) => void;
-  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
-  task: Task;
-  tasks: Task[];
+  setTasks: React.Dispatch<React.SetStateAction<TaskDB[]>>;
+  task: TaskDB;
+  tasks: TaskDB[];
   index: number;
 }
 
@@ -17,7 +17,6 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
 
   function taskComplete(complete: boolean) {
     const newTasks = [...tasks];
-    task.color = complete ? 'bg-green-500' : 'bg-blue-500'
     newTasks.splice(index, 1, task);
     setTasks(newTasks)
     setCheck(complete);
@@ -77,9 +76,9 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
       <div className="flex-grow min-w-0">
         <input className={`text-sm font-medium text-gray-900 truncate ${completeCheck ? 'line-through' : ''}`} onKeyDown={confirmTask} placeholder="New Task" defaultValue={task.name} ref={taskName}  />
         <div className="flex items-center text-xs text-gray-500 mt-0.5">
-          <span>{formatTime(task.startHour)}</span>
+          <span>{formatTime(task.startTime.getHours())}</span>
           <span className="mx-1">-</span>
-          <span>{formatTime(task.startHour + task.durationHours)}</span>
+          <span>{formatTime(task.startTime.getHours() + task.Duration)}</span>
         </div>
       </div>
       <hr className="my-12 h-0.5 border-t-0 bg-amber-400" />

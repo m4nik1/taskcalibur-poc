@@ -5,3 +5,12 @@ export interface Task {
   durationHours: number // e.g., 1.0 for 1 hour
   color: string
 }
+
+export interface TaskDB {
+  id: number,
+  name: string,
+  status: string,
+  startTime: Date,
+  Duration: number,
+  EndTime: Date  
+}

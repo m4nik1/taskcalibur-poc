@@ -1,12 +1,10 @@
-"use client";
-
-import { Task } from "../../types";
+import { Task, TaskDB } from "../../types";
 import CreateTaskButton from "./createTaskButton";
 import TaskItem from "./TaskItem";
 
 interface TaskListProps {
-  tasks: Task[];
-  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  tasks: TaskDB[];
+  setTasks: React.Dispatch<React.SetStateAction<TaskDB[]>>;
   setDraggedTask: (id: string | null) => void;
   setDraggedTaskIndex: (index: number | null) => void;
   dragStartInfo: { taskId: string | null }| null

@@ -1,21 +1,21 @@
 "use client";
 
 import { useState, type RefObject, useCallback, useEffect } from "react";
-import { Task } from "../types";
+import { Task, TaskDB } from "../types";
 import { getHourFromX } from "@/lib/utils";
 
 interface DragStartInfo {
   startX: number;
-  startHour: number;
+  startHour: Date;
   taskId: string | null;
   isResizing: boolean;
   initialDuration?: number;
-  initialStartHour?: number;
+  initialStartHour?: Date;
 }
 
 interface UseGanttDragProps {
-  tasks: Task[];
-  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  tasks: TaskDB[];
+  setTasks: React.Dispatch<React.SetStateAction<TaskDB[]>>;
   gridRef: RefObject<HTMLDivElement>;
   HOUR_WIDTH_PX: number;
   START_HOUR_DISPLAY: number;
@@ -51,11 +51,11 @@ export function useGanttDrag({
           setIsDragging(true);
           setDragStartInfo({
             startX: e.clientX,
-            startHour: task.startHour, // Initial start hour of the task
+            startHour: task.startTime, // Initial start hour of the task
             taskId: taskId,
             isResizing: isResizer,
-            initialDuration: task.durationHours,
-            initialStartHour: task.startHour,
+            initialDuration: task.Duration,
+            initialStartHour: task.startTime,
           });
         }
       } else if (gridRef.current) {
