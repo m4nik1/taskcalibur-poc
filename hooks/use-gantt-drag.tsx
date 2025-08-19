@@ -7,7 +7,7 @@ import { getHourFromX } from "@/lib/utils";
 interface DragStartInfo {
   startX: number;
   startHour: Date;
-  taskId: string | null;
+  taskId: number | null;
   isResizing: boolean;
   initialDuration?: number;
   initialStartHour?: Date;
@@ -34,7 +34,7 @@ export function useGanttDrag({
   const [dragStartInfo, setDragStartInfo] = useState<DragStartInfo | null>(
     null
   );
-  const [tempTask, setTempTask] = useState<Omit<Task, "id"> | null>(null);
+  const [tempTask, setTempTask] = useState<Omit<TaskDB, "id"> | null>(null);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -54,7 +54,7 @@ export function useGanttDrag({
             startHour: task.startTime, // Initial start hour of the task
             taskId: taskId,
             isResizing: isResizer,
-            initialDuration: task.Duration,
+            initialDuration: task.Duration/60,
             initialStartHour: task.startTime,
           });
         }
@@ -128,9 +128,9 @@ export function useGanttDrag({
                 newStartHour = Math.max(START_HOUR_DISPLAY, newStartHour)
                 
                 // Constrain end hour to not go beyond END_HOUR_DISPLAY
-                const taskEndHour = newStartHour + task.durationHours
+                const taskEndHour = newStartHour + task.Duration/60
                 if (taskEndHour > END_HOUR_DISPLAY) {
-                  newStartHour = END_HOUR_DISPLAY - task.durationHours
+                  newStartHour = END_HOUR_DISPLAY - task.Duration/60
                 }
                 
                 return { ...task, startHour: newStartHour }

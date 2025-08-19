@@ -1,8 +1,8 @@
-import { Task } from "../../types"
+import { TaskDB } from "../../types"
 import { getXFromHour } from "@/lib/utils"
 
 interface GantTaskProps {
-    task: Task;
+    task: TaskDB;
     index: number;
 }
 
@@ -16,11 +16,11 @@ export default function GantTask({ task, index }: GantTaskProps) {
               justify-between px-2 text-white font-medium ${task.color}`}
             style={{
                 left: getXFromHour(
-                    task.startHour,
+                    task.startTime.getHours(),
                     HOUR_WIDTH_PX,
                     START_HOUR_DISPLAY
                 ),
-                width: task.durationHours * HOUR_WIDTH_PX,
+                width: task.Duration/60 * HOUR_WIDTH_PX,
                 top: `${index * 40 + 10}px`,
             }}
         >
