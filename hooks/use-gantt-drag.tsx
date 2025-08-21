@@ -39,7 +39,7 @@ export function useGanttDrag({
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (e.button !== 0) {
-        return
+        return;
       }
       const target = e.target as HTMLElement;
       const taskId = target.dataset.taskId;
@@ -47,7 +47,7 @@ export function useGanttDrag({
 
       if (taskId && gridRef.current) {
         const task = tasks.find((t) => t.id.toString() == taskId);
-        console.log("Found the task: ", task)
+        console.log("Found the task: ", task);
 
         if (task) {
           setIsDragging(true);
@@ -56,7 +56,7 @@ export function useGanttDrag({
             startHour: task.startTime.getHours(), // Initial start hour of the task
             taskId: taskId.toString(),
             isResizing: isResizer,
-            initialDuration: task.Duration/60,
+            initialDuration: task.Duration / 60,
             initialStartHour: task.startTime.getHours(),
           });
         }
@@ -102,11 +102,16 @@ export function useGanttDrag({
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
-      if(!isDragging || !dragStartInfo || !gridRef.current) return
+      if (!isDragging || !dragStartInfo || !gridRef.current) return;
 
-      const currentHour = getHourFromX(e.clientX, gridRef, HOUR_WIDTH_PX, START_HOUR_DISPLAY)
+      const currentHour = getHourFromX(
+        e.clientX,
+        gridRef,
+        HOUR_WIDTH_PX,
+        START_HOUR_DISPLAY
+      );
 
-      if(dragStartInfo.taskId === null) {
+      if (dragStartInfo.taskId === null) {
         // if(tempTask) {
         //   const newDuration = Math.max(0.5, currentHour - tempTask.startHour)
         //   setTempTask((prev) => (prev ? { ...prev, durationHours: newDuration } : null))
@@ -117,45 +122,68 @@ export function useGanttDrag({
             if (task.id.toString() === dragStartInfo.taskId) {
               if (dragStartInfo.isResizing) {
                 // Resizing from the right edge - constrain end time
-                const maxEndHour = END_HOUR_DISPLAY
-                const newDuration = Math.max(0.5, Math.min(currentHour - task.startTime.getHours(), maxEndHour - task.startTime.getHours()))
-                return { ...task, durationHours: newDuration }
+                const maxEndHour = END_HOUR_DISPLAY;
+                const newDuration = Math.max(
+                  0.5,
+                  Math.min(
+                    currentHour - task.startTime.getHours(),
+                    maxEndHour - task.startTime.getHours()
+                  )
+                );
+                return { ...task, durationHours: newDuration };
               } else {
                 // Moving the task - constrain within grid boundaries
-                console.log("We are trying to move the task: ", task)
-                const deltaX = e.clientX - dragStartInfo.startX
-                const deltaHours = deltaX / HOUR_WIDTH_PX
-                let newStartHour = dragStartInfo.initialStartHour! + deltaHours
-                
-                console.log("New start hour: ", newStartHour)
+                console.log("We are trying to move the task: ", task);
+                const deltaX = e.clientX - dragStartInfo.startX;
+                const deltaHours = deltaX / HOUR_WIDTH_PX;
+                let newStartHour = dragStartInfo.initialStartHour! + deltaHours;
+
+                console.log("New start hour: ", newStartHour);
                 // Constrain start hour to not go before START_HOUR_DISPLAY
-                newStartHour = Math.max(START_HOUR_DISPLAY, newStartHour)
-                
+                newStartHour = Math.max(START_HOUR_DISPLAY, newStartHour);
+
                 // Constrain end hour to not go beyond END_HOUR_DISPLAY
-                const taskEndHour = newStartHour + (task.Duration/60)
+                const taskEndHour = newStartHour + task.Duration / 60;
                 if (taskEndHour > END_HOUR_DISPLAY) {
-                  newStartHour = END_HOUR_DISPLAY - (task.Duration/60)
+                  newStartHour = END_HOUR_DISPLAY - task.Duration / 60;
                 }
-                
-                return { ...task, startTime: new Date(2) }
+
+                console.log("New start hour: ", newStartHour);
+
+                task.startTime.setHours(newStartHour);
+
+                return {
+                  ...task,
+                  EndTime: new Date(newStartHour + task.Duration / 60),
+                };
               }
             }
-            return task
-          }),
-        )
+            return task;
+          })
+        );
       }
     },
-    [isDragging, dragStartInfo, tempTask, tasks, setTasks, gridRef, HOUR_WIDTH_PX, START_HOUR_DISPLAY, END_HOUR_DISPLAY]
-  )
+    [
+      isDragging,
+      dragStartInfo,
+      tempTask,
+      tasks,
+      setTasks,
+      gridRef,
+      HOUR_WIDTH_PX,
+      START_HOUR_DISPLAY,
+      END_HOUR_DISPLAY,
+    ]
+  );
 
   useEffect(() => {
-    document.addEventListener("mousemove", handleMouseMove)
-    document.addEventListener("mouseup", handleMouseUp)
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
     return () => {
-      document.removeEventListener("mousemove", handleMouseMove)
-      document.removeEventListener("mouseup", handleMouseUp)
-    }
-  }, [handleMouseMove, handleMouseUp])
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [handleMouseMove, handleMouseUp]);
 
   return { isDragging, dragStartInfo, tempTask, handleMouseDown };
 }
