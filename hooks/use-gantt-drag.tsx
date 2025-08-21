@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, type RefObject, useCallback, useEffect } from "react";
-import { Task, TaskDB } from "../types";
+import { TaskDB } from "../types";
 import { getHourFromX } from "@/lib/utils";
 
 interface DragStartInfo {
   startX: number;
   startHour: number;
-  taskId: String | null;
+  taskId: string | null;
   isResizing: boolean;
   initialDuration?: number;
   initialStartHour?: number;
@@ -130,7 +130,7 @@ export function useGanttDrag({
                     maxEndHour - task.startTime.getHours()
                   )
                 );
-                return { ...task, durationHours: newDuration };
+                return { ...task, Duration: newDuration*60 };
               } else {
                 // Moving the task - constrain within grid boundaries
                 console.log("We are trying to move the task: ", task);
@@ -149,12 +149,16 @@ export function useGanttDrag({
                 }
 
                 console.log("New start hour: ", newStartHour);
+                console.log(
+                  "New end hour: ",
+                  newStartHour + task.Duration / 60
+                );
 
-                task.startTime.setHours(newStartHour);
+                task.startTime.setHours(Math.round(newStartHour * 4)/4);
+                // task.EndTime.setHours(newStartHour + task.Duration / 60);
 
                 return {
                   ...task,
-                  EndTime: new Date(newStartHour + task.Duration / 60),
                 };
               }
             }
@@ -166,8 +170,6 @@ export function useGanttDrag({
     [
       isDragging,
       dragStartInfo,
-      tempTask,
-      tasks,
       setTasks,
       gridRef,
       HOUR_WIDTH_PX,
