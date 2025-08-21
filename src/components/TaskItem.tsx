@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Task, TaskDB } from "../../types";
+import { TaskDB } from "../../types";
 import { formatTime } from "@/lib/utils"
 
 interface TaskItemProps {
@@ -78,7 +78,7 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
         <div className="flex items-center text-xs text-gray-500 mt-0.5">
           <span>{formatTime(task.startTime.getHours())}</span>
           <span className="mx-1">-</span>
-          <span>{formatTime(task.startTime.getHours() + task.Duration)}</span>
+          <span>{formatTime(task.startTime.getHours() + (task.Duration/60))}</span>
         </div>
       </div>
       <hr className="my-12 h-0.5 border-t-0 bg-amber-400" />

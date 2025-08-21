@@ -13,14 +13,14 @@ export default function GantTask({ task, index }: GantTaskProps) {
         <div
             data-task-id={task.id}
             className={`absolute h-8 rounded active:cursor-grabbing flex items-center
-              justify-between px-2 text-white font-medium ${task.color}`}
+              justify-between px-2 text-white font-medium bg-blue-500`}
             style={{
                 left: getXFromHour(
                     task.startTime.getHours(),
                     HOUR_WIDTH_PX,
                     START_HOUR_DISPLAY
                 ),
-                width: task.Duration/60 * HOUR_WIDTH_PX,
+                width: (task.Duration/60) * HOUR_WIDTH_PX,
                 top: `${index * 40 + 10}px`,
             }}
         >

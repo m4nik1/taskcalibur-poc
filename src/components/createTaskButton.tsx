@@ -1,14 +1,14 @@
-import { Task } from "../../types";
+import { TaskDB } from "../../types";
 
 interface CreateTaskProps {
-    setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
-    tasks: Task[];
+    setTasks: React.Dispatch<React.SetStateAction<TaskDB[]>>;
+    tasks: TaskDB[];
 }
 
 export default function CreateTaskButton({ setTasks, tasks }: CreateTaskProps) {
     function createNewTask() {
-        const newTask: Task = {
-            id: Date.now().toString(),
+        const newTask= {
+            id: Date.now().toString
             name: ``,
             startHour: 9, // Default start time
             durationHours: 1, // Default duration

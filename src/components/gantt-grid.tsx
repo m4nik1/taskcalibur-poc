@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, RefObject, SetStateAction } from "react";
-import { Task } from "../../types";
+import { TaskDB } from "../../types";
 import { getHourFromX, getXFromHour } from "@/lib/utils";
 import GantTask from "./gantTasks";
 import DateNavigation from "./DateNavigation";
 
 interface gantGridProps {
-  setTasks: React.Dispatch<SetStateAction<Task[]>>;
-  tasks: Task[];
+  setTasks: React.Dispatch<SetStateAction<TaskDB[]>>;
+  tasks: TaskDB[];
   gridRef: RefObject<HTMLDivElement>;
   handleMouseDown: (e: React.MouseEvent) => void;
-  dragStartInfo: { taskId: string | null } | null;
+  dragStartInfo: { taskId: number | null } | null;
   draggedTask: string | null;
 }
 
@@ -58,7 +58,7 @@ export default function GantGrid({
       );
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
-          task.id === draggedTaskState
+          task.id.toString() === draggedTaskState
             ? { ...task, startHour: dropHour }
             : task
         )

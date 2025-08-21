@@ -6,11 +6,11 @@ import { getHourFromX } from "@/lib/utils";
 
 interface DragStartInfo {
   startX: number;
-  startHour: Date;
-  taskId: number | null;
+  startHour: number;
+  taskId: String | null;
   isResizing: boolean;
   initialDuration?: number;
-  initialStartHour?: Date;
+  initialStartHour?: number;
 }
 
 interface UseGanttDragProps {
@@ -38,24 +38,26 @@ export function useGanttDrag({
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if (e.button !== 0) return;
-
+      if (e.button !== 0) {
+        return
+      }
       const target = e.target as HTMLElement;
       const taskId = target.dataset.taskId;
       const isResizer = target.classList.contains("task-resizer");
 
       if (taskId && gridRef.current) {
-        const task = tasks.find((t) => t.id == taskId);
+        const task = tasks.find((t) => t.id.toString() == taskId);
+        console.log("Found the task: ", task)
 
         if (task) {
           setIsDragging(true);
           setDragStartInfo({
             startX: e.clientX,
-            startHour: task.startTime, // Initial start hour of the task
-            taskId: taskId,
+            startHour: task.startTime.getHours(), // Initial start hour of the task
+            taskId: taskId.toString(),
             isResizing: isResizer,
             initialDuration: task.Duration/60,
-            initialStartHour: task.startTime,
+            initialStartHour: task.startTime.getHours(),
           });
         }
       } else if (gridRef.current) {
@@ -112,28 +114,30 @@ export function useGanttDrag({
       } else {
         setTasks((prevTasks) =>
           prevTasks.map((task) => {
-            if (task.id === dragStartInfo.taskId) {
+            if (task.id.toString() === dragStartInfo.taskId) {
               if (dragStartInfo.isResizing) {
                 // Resizing from the right edge - constrain end time
                 const maxEndHour = END_HOUR_DISPLAY
-                const newDuration = Math.max(0.5, Math.min(currentHour - task.startHour, maxEndHour - task.startHour))
+                const newDuration = Math.max(0.5, Math.min(currentHour - task.startTime.getHours(), maxEndHour - task.startTime.getHours()))
                 return { ...task, durationHours: newDuration }
               } else {
                 // Moving the task - constrain within grid boundaries
+                console.log("We are trying to move the task: ", task)
                 const deltaX = e.clientX - dragStartInfo.startX
                 const deltaHours = deltaX / HOUR_WIDTH_PX
                 let newStartHour = dragStartInfo.initialStartHour! + deltaHours
                 
+                console.log("New start hour: ", newStartHour)
                 // Constrain start hour to not go before START_HOUR_DISPLAY
                 newStartHour = Math.max(START_HOUR_DISPLAY, newStartHour)
                 
                 // Constrain end hour to not go beyond END_HOUR_DISPLAY
-                const taskEndHour = newStartHour + task.Duration/60
+                const taskEndHour = newStartHour + (task.Duration/60)
                 if (taskEndHour > END_HOUR_DISPLAY) {
-                  newStartHour = END_HOUR_DISPLAY - task.Duration/60
+                  newStartHour = END_HOUR_DISPLAY - (task.Duration/60)
                 }
                 
-                return { ...task, startHour: newStartHour }
+                return { ...task, startTime: new Date(2) }
               }
             }
             return task
