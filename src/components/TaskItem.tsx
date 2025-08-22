@@ -22,6 +22,7 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
     setCheck(complete);
   }
 
+  // Add update change to DB to fix the name of the task
   function confirmTask(e) {
     if(e.code == "Enter") {
       const newTasks = [...tasks]

@@ -6,14 +6,15 @@ interface CreateTaskProps {
 }
 
 export default function CreateTaskButton({ setTasks, tasks }: CreateTaskProps) {
-    function createNewTask() {
-        const newTask= {
-            id: Date.now().toString
-            name: ``,
-            startHour: 9, // Default start time
-            durationHours: 1, // Default duration
-            color: "bg-blue-500",
+    async function createNewTask() { 
+        const newTask : TaskDB = {
+            name: "",
+            startTime: new Date(), // Default start time
+            status: "Draft",
+            Duration: 1, // Default duration
+            EndTime: new Date()
         }
+        
         setTasks((prevTasks) => [...prevTasks, newTask])
     }
 

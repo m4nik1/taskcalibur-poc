@@ -34,11 +34,7 @@ export default function HomePageClient({ taskDB } : HomeProps) {
             END_HOUR_DISPLAY,
         }
     );
-
-    function getTasks() {
-        console.log(tasks)
-    }
-
+    
     return (
         <div className="flex h-screen">
             <div className="flex-1 flex bg-gray-50">
@@ -59,7 +55,6 @@ export default function HomePageClient({ taskDB } : HomeProps) {
                     draggedTask={draggedTask}
                 />
             </div>
-            <Button onClick={() => getTasks()}>Get tasks DB</Button>
         </div>
     );
 }

@@ -91,7 +91,6 @@ export function useGanttDrag({
       if (dragStartInfo.taskId === null && tempTask) {
         setTasks((prevTasks) => [
           ...prevTasks,
-          { ...tempTask, id: Date.now.toString() },
         ]);
       }
       setIsDragging(false);

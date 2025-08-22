@@ -1,5 +1,6 @@
 import { TaskDB } from "../../types";
 import TaskItem from "./TaskItem";
+import CreateTaskButton from "./createTaskButton";
 
 interface TaskListProps {
   tasks: TaskDB[];
@@ -34,10 +35,10 @@ export default function TaskList({
             setDraggedTaskIndex={setDraggedTaskIndex} 
           />
         ))}
-        {/* <CreateTaskButton 
+        <CreateTaskButton 
           setTasks={setTasks}
           tasks={tasks}
-        /> */}
+        />
       </div>
     </div>
   );
