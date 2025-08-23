@@ -57,8 +57,10 @@ export default function GantGrid({
         START_HOUR_DISPLAY
       );
       setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id.toString() === draggedTaskState
+        prevTasks
+          .filter((t) => !!!t.id)
+          .map((task) =>
+          task.id?.toString() === draggedTaskState
             ? { ...task, startHour: dropHour }
             : task
         )
@@ -120,9 +122,13 @@ export default function GantGrid({
             );
           }
         `}</style>
-        {tasks.map((task, index) => (
-          <GantTask key={index} task={task} index={index} />
-        ))}
+        { 
+          tasks
+          .filter((t) => !!!t.id)
+          .map((task, index) => (
+            <GantTask key={index} task={task} index={index} />
+          ))
+        }
 
         {Array.from({ length: tasks.length + 10 }, (_, i) => (
           <div
