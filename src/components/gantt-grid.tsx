@@ -56,7 +56,7 @@ export default function GantGrid({
         HOUR_WIDTH_PX,
         START_HOUR_DISPLAY
       );
-      setTasks((prevTasks) =>
+      setTasks((prevTasks) => 
         prevTasks
           .filter((t) => !!!t.id)
           .map((task) =>
@@ -124,7 +124,7 @@ export default function GantGrid({
         `}</style>
         { 
           tasks
-          .filter((t) => !!!t.id)
+          .filter((t) => t.id)
           .map((task, index) => (
             <GantTask key={index} task={task} index={index} />
           ))

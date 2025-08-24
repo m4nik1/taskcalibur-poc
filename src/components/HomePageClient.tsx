@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useGanttDrag } from "../../hooks/use-gantt-drag";
-import { Task, TaskDB } from "../../types";
+import { TaskDB } from "../../types";
 import TaskList from "./TaskList";
 import GantGrid from "./gantt-grid";
 import { Button } from "./ui/button";
@@ -34,6 +34,10 @@ export default function HomePageClient({ taskDB } : HomeProps) {
             END_HOUR_DISPLAY,
         }
     );
+
+    useEffect(() => {
+        console.log("Tasks loaded ", tasks)
+    })
     
     return (
         <div className="flex h-screen">
