@@ -1,9 +1,10 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function POST(req : NextRequest) {
+export async function POST(req : NextRequest) {
     try {
-    const reqData = await req.json();
+       console.log("Request has been received!")
+       const reqData = await req.json();
         
         console.log("Req data has been recieved: ", reqData);
 

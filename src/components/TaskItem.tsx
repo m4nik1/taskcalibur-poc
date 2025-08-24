@@ -25,10 +25,23 @@ export default function TaskItem({ setDraggedTask, setDraggedTaskIndex, task, ta
   // Add update change to DB to fix the name of the task
   function confirmTask(e) {
     if(e.code == "Enter") {
-      const newTasks = [...tasks]
-      task.name = taskName.current.value
-      newTasks.splice(index, 1, task);
-      setTasks(newTasks)
+      try {
+        const newTasks = [...tasks]
+        task.name = taskName.current.value
+        newTasks.splice(index, 1, task);
+
+        // const response = fetch("/api/addTask", {
+        //   method: "POST",
+        //   body: JSON.stringify(newTasks)
+        // })
+
+        console.log(response)
+
+        setTasks(newTasks)
+      } catch(err) {
+        console.log("We have an error")
+        console.error(err);
+      }
     }
   }
 
