@@ -117,6 +117,7 @@ export function useGanttDrag({
       } else {
         setTasks((prevTasks) =>
           prevTasks.map((task) => {
+            // console.log("Task moving: ", task)
             if (task.id.toString() === dragStartInfo.taskId) {
               if (dragStartInfo.isResizing) {
                 // Resizing from the right edge - constrain end time

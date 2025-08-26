@@ -35,9 +35,9 @@ export default function HomePageClient({ taskDB } : HomeProps) {
         }
     );
 
-    useEffect(() => {
-        console.log("Tasks loaded ", tasks)
-    })
+    // useEffect(() => {
+    //     console.log("Tasks loaded ", tasks)
+    // })
     
     return (
         <div className="flex h-screen">
