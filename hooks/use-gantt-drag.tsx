@@ -47,7 +47,6 @@ export function useGanttDrag({
 
       if (taskId && gridRef.current) {
         const task = tasks.find((t) => t.id.toString() == taskId);
-        console.log("Found the task: ", task);
 
         if (task) {
           setIsDragging(true);
@@ -132,12 +131,10 @@ export function useGanttDrag({
                 return { ...task, Duration: newDuration*60 };
               } else {
                 // Moving the task - constrain within grid boundaries
-                console.log("We are trying to move the task: ", task);
                 const deltaX = e.clientX - dragStartInfo.startX;
                 const deltaHours = deltaX / HOUR_WIDTH_PX;
                 let newStartHour = dragStartInfo.initialStartHour! + deltaHours;
 
-                console.log("New start hour: ", newStartHour);
                 // Constrain start hour to not go before START_HOUR_DISPLAY
                 newStartHour = Math.max(START_HOUR_DISPLAY, newStartHour);
 
@@ -146,12 +143,6 @@ export function useGanttDrag({
                 if (taskEndHour > END_HOUR_DISPLAY) {
                   newStartHour = END_HOUR_DISPLAY - task.Duration / 60;
                 }
-
-                console.log("New start hour: ", newStartHour);
-                console.log(
-                  "New end hour: ",
-                  newStartHour + task.Duration / 60
-                );
 
                 task.startTime.setHours(Math.round(newStartHour * 4)/4);
                 // task.EndTime.setHours(newStartHour + task.Duration / 60);
