@@ -5,7 +5,8 @@ export async function POST(req : NextRequest) {
     try {
        console.log("Request has been received!")
        const reqData = await req.json();
-        
+
+       delete reqData.id
         console.log("Req data has been recieved: ", reqData);
 
         const newTask = await prisma.userTasks.create({ data: reqData });
