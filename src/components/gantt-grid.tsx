@@ -11,6 +11,7 @@ interface gantGridProps {
   tasks: TaskDB[];
   gridRef: RefObject<HTMLDivElement>;
   handleMouseDown: (e: React.MouseEvent) => void;
+  handleMouseUp: (e: React.MouseEvent) => void;
   dragStartInfo: { taskId: number | null } | null;
   draggedTask: string | null;
 }
@@ -20,6 +21,8 @@ export default function GantGrid({
   tasks,
   gridRef,
   handleMouseDown,
+  handleMouseUp,
+  dragStartInfo,
 }: gantGridProps) {
   const HOUR_WIDTH_PX = 70; // Pixels per hour
   const START_HOUR_DISPLAY = 7; // Start time for the visible grid (7 AM)
@@ -32,8 +35,9 @@ export default function GantGrid({
     if (hour === 24) return "12AM";
     if (hour === 25) return "1AM";
     if (hour === 26) return "2AM";
-    return `${hour % 12 === 0 ? 12 : hour % 12}${hour < 12 || hour >= 24 ? "AM" : "PM"
-      }`;
+    return `${hour % 12 === 0 ? 12 : hour % 12}${
+      hour < 12 || hour >= 24 ? "AM" : "PM"
+    }`;
   });
 
   const currentTime = new Date();
@@ -56,20 +60,20 @@ export default function GantGrid({
         HOUR_WIDTH_PX,
         START_HOUR_DISPLAY
       );
-      setTasks((prevTasks) => 
+      setTasks((prevTasks) =>
         prevTasks
           .filter((t) => !!!t.id)
           .map((task) =>
-          task.id?.toString() === draggedTaskState
-            ? { ...task, startHour: dropHour }
-            : task
-        )
+            task.id?.toString() === draggedTaskState
+              ? { ...task, startHour: dropHour }
+              : task
+          )
       );
       setDraggedTaskState(null);
     }
   }
 
-  const [currentDate, setCurrentDate] = useState(new Date);
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [draggedTaskState, setDraggedTaskState] = useState<string | null>(null);
 
   return (
@@ -77,7 +81,7 @@ export default function GantGrid({
       {/* Date Navi */}
       <DateNavigation currentDate={currentDate} />
 
-      { /* Time Labels */}
+      {/* Time Labels */}
       <div className="flex border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800">
         <div
           className="flex-1 grid"
@@ -101,7 +105,7 @@ export default function GantGrid({
       <div
         ref={gridRef}
         className="flex-1 relative overflow-auto bg-white"
-        onMouseDown={handleMouseDown}
+        // onMouseDown={handleMouseDown}
         onDragOver={(e) => {
           e.preventDefault();
           e.dataTransfer.dropEffect = "move";
@@ -122,13 +126,18 @@ export default function GantGrid({
             );
           }
         `}</style>
-        { 
-          tasks
+        {tasks
           .filter((t) => t.id)
           .map((task, index) => (
-            <GantTask key={index} task={task} index={index} />
-          ))
-        }
+            <GantTask
+              key={index}
+              task={task}
+              index={index}
+              handleMouseDown={handleMouseDown}
+              handleMouseUp={handleMouseUp}
+              dragStartInfo={dragStartInfo}
+            />
+          ))}
 
         {Array.from({ length: tasks.length + 10 }, (_, i) => (
           <div

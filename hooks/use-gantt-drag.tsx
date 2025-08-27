@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, type RefObject, useCallback, useEffect } from "react";
+import {
+  useState,
+  type RefObject,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { TaskDB } from "../types";
 import { getHourFromX } from "@/lib/utils";
 
@@ -11,6 +17,10 @@ interface DragStartInfo {
   isResizing: boolean;
   initialDuration?: number;
   initialStartHour?: number;
+}
+
+interface DragEndInfo {
+  task: TaskDB;
 }
 
 interface UseGanttDragProps {
@@ -34,6 +44,7 @@ export function useGanttDrag({
   const [dragStartInfo, setDragStartInfo] = useState<DragStartInfo | null>(
     null
   );
+  const updatedTask = useRef<TaskDB | null>(null);
   const [tempTask, setTempTask] = useState<Omit<TaskDB, "id"> | null>(null);
   const [dragOffset, setDragOffset] = useState(0);
 
@@ -57,7 +68,8 @@ export function useGanttDrag({
             taskId: taskId.toString(),
             isResizing: isResizer,
             initialDuration: task.Duration / 60,
-            initialStartHour: task.startTime.getHours() + (task.startTime.getMinutes() / 60),
+            initialStartHour:
+              task.startTime.getHours() + task.startTime.getMinutes() / 60,
           });
           setDragOffset(0);
         }
@@ -76,32 +88,103 @@ export function useGanttDrag({
       const deltaX = e.clientX - dragStartInfo.startX;
       const deltaHours = deltaX / HOUR_WIDTH_PX;
 
-      setDragOffset(deltaHours)
+      setDragOffset(deltaHours);
+
+      setTasks((prev) =>
+        prev.map((task) => {
+          if (task.id?.toString() == dragStartInfo.taskId) {
+            if (dragStartInfo.isResizing) {
+              // -- Resizing --
+              const newDuration = Math.max(
+                0.5,
+                dragStartInfo.initialDuration! + dragOffset
+              );
+
+              const newDurationMinutes = newDuration * 60;
+              const newEndTime = new Date(
+                task.startTime.getTime() + newDurationMinutes * 60 * 1000
+              );
+              return {
+                ...task,
+                Duration: newDurationMinutes,
+                EndTime: newEndTime,
+              };
+            } else {
+              // --- Moving ---
+              let newStartHour = dragStartInfo.initialStartHour! + dragOffset;
+
+              newStartHour = Math.round(newStartHour * 4) / 4;
+
+              // Constrain
+              newStartHour = Math.max(START_HOUR_DISPLAY, newStartHour);
+              const taskDurationHours = task.Duration / 60;
+              if (newStartHour + taskDurationHours > END_HOUR_DISPLAY) {
+                newStartHour = END_HOUR_DISPLAY - taskDurationHours;
+              }
+
+              const newStartTime = new Date(task.startTime);
+              newStartTime.setHours(Math.floor(newStartHour));
+              newStartTime.setMinutes((newStartHour % 1) * 60);
+
+              const newEndTime = new Date(
+                newStartTime.getTime() + task.Duration * 60 * 1000
+              );
+
+              updatedTask.current = {
+                ...task,
+                startTime: newStartTime,
+                EndTime: newEndTime,
+              };
+              return updatedTask.current;
+            }
+          }
+          return task;
+        })
+      );
     },
     [
       isDragging,
       dragStartInfo,
       HOUR_WIDTH_PX,
+      gridRef,
+      START_HOUR_DISPLAY,
+      dragOffset,
+      setTasks,
+      END_HOUR_DISPLAY,
     ]
   );
 
   // When the mouse is up we will stop the dragging and set the task stuff
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useCallback(async () => {
     if (isDragging && dragStartInfo) {
-      
     }
+    if (updatedTask.current) {
+      console.log("updated Task", updatedTask);
+      const response = await fetch("/api/updateTask", {
+        method: "POST",
+        body: JSON.stringify(updatedTask.current),
+      });
+      console.log(response);
+    }
+    setIsDragging(false);
+    setDragStartInfo(null);
+    setDragOffset(0);
   }, [isDragging, dragStartInfo]);
-
-
 
   useEffect(() => {
     document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    // document.addEventListener("mouseup", handleMouseUp);
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
+      // document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [handleMouseMove, handleMouseUp]);
 
-  return { isDragging, dragStartInfo, tempTask, handleMouseDown };
+  return {
+    isDragging,
+    dragStartInfo,
+    tempTask,
+    handleMouseDown,
+    handleMouseUp,
+  };
 }

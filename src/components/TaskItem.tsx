@@ -36,27 +36,30 @@ export default function TaskItem({
         const newTasks = [...tasks];
         task.name = taskName.current.value;
         newTasks.splice(index, 1, task);
-        task.id = 20000
+        task.id = 20000;
 
         fetch("/api/addTask", {
           method: "POST",
           body: JSON.stringify(task),
         });
 
-
         setTasks(newTasks);
       } catch (err) {
         console.log("We have an error");
         console.error(err);
       }
-    }
-    else if(e.code == "Backspace" && taskName.current.value == '') {
-      console.log("Deleting task")
+    } else if (e.code == "Backspace" && taskName.current.value == "") {
+      console.log("Deleting task");
       const newTasks = [...tasks];
       // setTasks(newTasks.splice(index, 1, task))
-      newTasks.splice(index, 1)
-      
-      setTasks(newTasks)
+      newTasks.splice(index, 1);
+
+      fetch("/api/deleteTask", {
+        method: "POST",
+        body: JSON.stringify(task),
+      });
+
+      setTasks(newTasks);
     }
   }
 
