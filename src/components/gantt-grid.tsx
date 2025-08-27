@@ -3,7 +3,7 @@
 import { useState, RefObject, SetStateAction } from "react";
 import { TaskDB } from "../../types";
 import { getHourFromX, getXFromHour } from "@/lib/utils";
-import GantTask from "./gantTasks";
+import GantTask from "./gantTask";
 import DateNavigation from "./DateNavigation";
 
 interface gantGridProps {

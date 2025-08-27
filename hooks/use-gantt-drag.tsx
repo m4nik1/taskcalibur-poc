@@ -35,6 +35,7 @@ export function useGanttDrag({
     null
   );
   const [tempTask, setTempTask] = useState<Omit<TaskDB, "id"> | null>(null);
+  const [dragOffset, setDragOffset] = useState(0);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -56,118 +57,42 @@ export function useGanttDrag({
             taskId: taskId.toString(),
             isResizing: isResizer,
             initialDuration: task.Duration / 60,
-            initialStartHour: task.startTime.getHours(),
+            initialStartHour: task.startTime.getHours() + (task.startTime.getMinutes() / 60),
           });
+          setDragOffset(0);
         }
-      } else if (gridRef.current) {
-        const startHour = getHourFromX(
-          e.clientX,
-          gridRef,
-          HOUR_WIDTH_PX,
-          START_HOUR_DISPLAY
-        );
-
-        // setTempTask({
-        //   name: "New Task",
-        //   startHour: startHour,
-        //   durationHours: 0.5,
-        //   color: "bg-gray-500"
-        // })
-        setIsDragging(true);
-        setDragStartInfo({
-          startX: e.clientX,
-          startHour: startHour,
-          taskId: null, // Indicates new task creation
-          isResizing: false,
-        });
       }
     },
-    [tasks, gridRef, HOUR_WIDTH_PX, START_HOUR_DISPLAY]
+    [tasks, gridRef]
   );
 
-  const handleMouseUp = useCallback(() => {
-    if (isDragging && dragStartInfo) {
-      if (dragStartInfo.taskId === null && tempTask) {
-        setTasks((prevTasks) => [
-          ...prevTasks,
-        ]);
-      }
-      setIsDragging(false);
-      setDragStartInfo(null);
-      setTempTask(null);
-    }
-  }, [isDragging, dragStartInfo, tempTask, setTasks]);
-
+  // When the mouse is moving just get the event's x and drag start x
+  // This only happens if mouse is clicked over a task and moving
+  // Then calculate the offset of hours of that task
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!isDragging || !dragStartInfo || !gridRef.current) return;
 
-      const currentHour = getHourFromX(
-        e.clientX,
-        gridRef,
-        HOUR_WIDTH_PX,
-        START_HOUR_DISPLAY
-      );
+      const deltaX = e.clientX - dragStartInfo.startX;
+      const deltaHours = deltaX / HOUR_WIDTH_PX;
 
-      if (dragStartInfo.taskId === null) {
-        // if(tempTask) {
-        //   const newDuration = Math.max(0.5, currentHour - tempTask.startHour)
-        //   setTempTask((prev) => (prev ? { ...prev, durationHours: newDuration } : null))
-        // }
-      } else {
-        setTasks((prevTasks) =>
-          prevTasks.map((task) => {
-            // console.log("Task moving: ", task)
-            if (task.id.toString() === dragStartInfo.taskId) {
-              if (dragStartInfo.isResizing) {
-                // Resizing from the right edge - constrain end time
-                const maxEndHour = END_HOUR_DISPLAY;
-                const newDuration = Math.max(
-                  0.5,
-                  Math.min(
-                    currentHour - task.startTime.getHours(),
-                    maxEndHour - task.startTime.getHours()
-                  )
-                );
-                return { ...task, Duration: newDuration*60 };
-              } else {
-                // Moving the task - constrain within grid boundaries
-                const deltaX = e.clientX - dragStartInfo.startX;
-                const deltaHours = deltaX / HOUR_WIDTH_PX;
-                let newStartHour = dragStartInfo.initialStartHour! + deltaHours;
-
-                // Constrain start hour to not go before START_HOUR_DISPLAY
-                newStartHour = Math.max(START_HOUR_DISPLAY, newStartHour);
-
-                // Constrain end hour to not go beyond END_HOUR_DISPLAY
-                const taskEndHour = newStartHour + task.Duration / 60;
-                if (taskEndHour > END_HOUR_DISPLAY) {
-                  newStartHour = END_HOUR_DISPLAY - task.Duration / 60;
-                }
-
-                task.startTime.setHours(Math.round(newStartHour * 4)/4);
-                // task.EndTime.setHours(newStartHour + task.Duration / 60);
-
-                return {
-                  ...task,
-                };
-              }
-            }
-            return task;
-          })
-        );
-      }
+      setDragOffset(deltaHours)
     },
     [
       isDragging,
       dragStartInfo,
-      setTasks,
-      gridRef,
       HOUR_WIDTH_PX,
-      START_HOUR_DISPLAY,
-      END_HOUR_DISPLAY,
     ]
   );
+
+  // When the mouse is up we will stop the dragging and set the task stuff
+  const handleMouseUp = useCallback(() => {
+    if (isDragging && dragStartInfo) {
+      
+    }
+  }, [isDragging, dragStartInfo]);
+
+
 
   useEffect(() => {
     document.addEventListener("mousemove", handleMouseMove);
