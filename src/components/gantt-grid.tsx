@@ -14,6 +14,8 @@ interface gantGridProps {
   handleMouseUp: (e: React.MouseEvent) => void;
   dragStartInfo: { taskId: number | null } | null;
   draggedTask: string | null;
+  navigateDate: (direction: number) => void;
+  currentDate: Date;
 }
 
 export default function GantGrid({
@@ -23,6 +25,8 @@ export default function GantGrid({
   handleMouseDown,
   handleMouseUp,
   dragStartInfo,
+  navigateDate,
+  currentDate,
 }: gantGridProps) {
   const HOUR_WIDTH_PX = 70; // Pixels per hour
   const START_HOUR_DISPLAY = 7; // Start time for the visible grid (7 AM)
@@ -72,14 +76,12 @@ export default function GantGrid({
       setDraggedTaskState(null);
     }
   }
-
-  const [currentDate, setCurrentDate] = useState(new Date());
   const [draggedTaskState, setDraggedTaskState] = useState<string | null>(null);
 
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
       {/* Date Navi */}
-      <DateNavigation currentDate={currentDate} />
+      <DateNavigation currentDate={currentDate} navigateDate={navigateDate} />
 
       {/* Time Labels */}
       <div className="flex border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800">

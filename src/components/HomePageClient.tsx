@@ -20,6 +20,7 @@ export default function HomePageClient({ taskDB }: HomeProps) {
   const gridRef = useRef<HTMLDivElement>(null!);
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
   const [draggedTaskIndex, setDraggedTaskIndex] = useState<number | null>(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const [tasks, setTasks] = useState<TaskDB[]>(taskDB);
 
@@ -38,9 +39,11 @@ export default function HomePageClient({ taskDB }: HomeProps) {
     END_HOUR_DISPLAY,
   });
 
-  // useEffect(() => {
-  //     console.log("Tasks loaded ", tasks)
-  // })
+  const navigateDate = (direction: number) => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() + direction);
+    setCurrentDate(newDate);
+  };
 
   return (
     <div className="flex h-screen">
@@ -61,6 +64,8 @@ export default function HomePageClient({ taskDB }: HomeProps) {
           handleMouseUp={handleMouseUp}
           dragStartInfo={dragStartInfo}
           draggedTask={draggedTask}
+          navigateDate={navigateDate}
+          currentDate={currentDate}
         />
       </div>
     </div>
