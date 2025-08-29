@@ -23,6 +23,7 @@ export default function HomePageClient({ taskDB }: HomeProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const [tasks, setTasks] = useState<TaskDB[]>(taskDB);
+  const [currentTasks, setCurrentTasks] = useState<TaskDB[]>([]);
 
   const {
     isDragging,
@@ -39,17 +40,31 @@ export default function HomePageClient({ taskDB }: HomeProps) {
     END_HOUR_DISPLAY,
   });
 
+  function checkingDates(date1: Date, date2: Date) {
+    console.log("date1 ", date1)
+    console.log("date2 ", date2)
+    return (date1.getDate() == date2.getDate()) && ((date1.getMonth()) == (date2.getMonth()))
+  }
+
+  const tasksForDate = tasks.filter((t) =>
+    checkingDates(new Date(t.startTime), currentDate)
+  );
+
   const navigateDate = (direction: number) => {
     const newDate = new Date(currentDate);
     newDate.setDate(currentDate.getDate() + direction);
     setCurrentDate(newDate);
   };
 
+  useEffect(() => {
+    setCurrentTasks(tasksForDate);
+  }, [currentDate]);
+
   return (
     <div className="flex h-screen">
       <div className="flex-1 flex bg-gray-50">
         <TaskList
-          tasks={tasks}
+          tasks={currentTasks}
           setTasks={setTasks}
           setDraggedTask={setDraggedTask}
           setDraggedTaskIndex={setDraggedTaskIndex}
@@ -58,7 +73,7 @@ export default function HomePageClient({ taskDB }: HomeProps) {
 
         <GantGrid
           setTasks={setTasks}
-          tasks={tasks}
+          tasks={currentTasks}
           gridRef={gridRef}
           handleMouseDown={handleMouseDown}
           handleMouseUp={handleMouseUp}
