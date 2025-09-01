@@ -1,14 +1,34 @@
-"use client";
-
-import { useState } from "react";
 import { Button } from "./ui/button";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
-export default function Navbar() {
-  const viewOptions = ["Day", "Week"];
+export default async function Navbar() {
+  const viewOptions = ["Day"];
+  // "Week"];
 
-  const [selectedView, setSelectView] = useState("Day");
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  async function signOut() {
+    "use server";
+    await authClient.signOut({
+      fetchOptions: {
+        credentials: "include",
+        onSuccess: () => {
+          redirect("/signIn");
+        },
+        onError: (e) => {
+          console.log("We have an error: ", e);
+        },
+      },
+    });
+    // redirect("/signIn");
+  }
 
   return (
     <div
@@ -32,18 +52,21 @@ export default function Navbar() {
           {viewOptions.map((view, index) => (
             <Button
               key={index}
-              variant={selectedView === view ? "default" : "ghost"}
+              variant="default"
               size="sm"
-              onClick={() => setSelectView(view)}
               className="px-3 py-1 text-sm"
             >
               {view}
             </Button>
           ))}
         </div>
-        <Button>
-          <Link href="/signIn">Sign In</Link>
-        </Button>
+        {!session ? (
+          <Button>
+            <Link href="/signIn">Sign In</Link>
+          </Button>
+        ) : (
+          <Button onClick={signOut}>Sign Out</Button>
+        )}
       </div>
     </div>
   );

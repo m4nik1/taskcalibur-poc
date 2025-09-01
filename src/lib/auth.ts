@@ -11,7 +11,6 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
     },
-    plugins: [nextCookies()]
     // socialProviders: {
     //     google: {
     //         clientId: process.env.GITHUB_CLIENT_ID as string, 

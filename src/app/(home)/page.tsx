@@ -12,7 +12,10 @@ export default async function HomePage() {
 
   if (!session) {
     console.log(session);
-    // return <div>Not Authenticated</div>;
+    return <div>Not Authenticated</div>;
+  } else {
+    console.log("Authenticated: ", session);
+    return <HomePageClient taskDB={tasks} />;
   }
 
   // const tasks = await prisma.userTasks.findMany();
@@ -21,6 +24,4 @@ export default async function HomePage() {
   //     userId:
   //   }
   // });
-
-  return <HomePageClient taskDB={tasks} />;
 }

@@ -164,7 +164,6 @@ export function useGanttDrag({
         method: "POST",
         body: JSON.stringify(updatedTask.current),
       });
-      console.log(response);
     }
     setIsDragging(false);
     setDragStartInfo(null);

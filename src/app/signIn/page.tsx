@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 
@@ -20,9 +19,6 @@ export default function SignIn() {
       callbackURL: "/",
       rememberMe: false,
     });
-
-    console.log("data: ", data);
-    console.log("error: ", error);
   }
 
   return (
