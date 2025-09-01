@@ -31,5 +31,3 @@
 //         await prisma.userTasks.create({ data: i })
 //     }
 // }
-
-// main()
