@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Calendar } from "lucide-react";
+import Link from "next/link";
 
 export default function Navbar() {
   const viewOptions = ["Day", "Week"];
@@ -40,6 +41,9 @@ export default function Navbar() {
             </Button>
           ))}
         </div>
+        <Button>
+          <Link href="/signIn">Sign In</Link>
+        </Button>
       </div>
     </div>
   );

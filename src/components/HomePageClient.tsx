@@ -5,7 +5,6 @@ import { useGanttDrag } from "../../hooks/use-gantt-drag";
 import { TaskDB } from "../../types";
 import TaskList from "./TaskList";
 import GantGrid from "./gantt-grid";
-import { Button } from "./ui/button";
 
 interface HomeProps {
   taskDB: TaskDB[];
@@ -41,9 +40,9 @@ export default function HomePageClient({ taskDB }: HomeProps) {
   });
 
   function checkingDates(date1: Date, date2: Date) {
-    console.log("date1 ", date1)
-    console.log("date2 ", date2)
-    return (date1.getDate() == date2.getDate()) && ((date1.getMonth()) == (date2.getMonth()))
+    return (
+      date1.getDate() == date2.getDate() && date1.getMonth() == date2.getMonth()
+    );
   }
 
   const tasksForDate = tasks.filter((t) =>

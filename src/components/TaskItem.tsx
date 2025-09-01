@@ -30,11 +30,11 @@ export default function TaskItem({
   }
 
   // Add update change to DB to fix the name of the task
-  function confirmTask(e) {
-    if (e.code == "Enter") {
+  function confirmTask(e: React.KeyboardEvent<HTMLInputElement> | undefined) {
+    if (e?.code == "Enter") {
       try {
         const newTasks = [...tasks];
-        task.name = taskName.current.value;
+        task.name = taskName.current.valueOf.toString();
         newTasks.splice(index, 1, task);
         task.id = 20000;
 
@@ -101,6 +101,7 @@ export default function TaskItem({
         type="checkbox"
         onChange={(e) => taskComplete(e.target.checked)}
         className="w-3 h-3 border border-dashed border-gray-300 rounded-full flex-shrink-0"
+        placeholder="New Task"
       />
       <div className="flex-grow min-w-0">
         <input
