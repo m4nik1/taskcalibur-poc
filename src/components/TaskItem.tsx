@@ -3,7 +3,7 @@ import { TaskDB } from "../../types";
 import { formatTime } from "@/lib/utils";
 
 interface TaskItemProps {
-  setDraggedTask: (id: number | null) => void;
+  setDraggedTask: (id: string | null) => void;
   setDraggedTaskIndex: (index: number | null) => void;
   setTasks: React.Dispatch<React.SetStateAction<TaskDB[]>>;
   task: TaskDB;
@@ -85,7 +85,7 @@ export default function TaskItem({
       style={{ height: "40px" }}
       draggable
       onDragStart={(e) => {
-        setDraggedTask(task.id ?? null);
+        setDraggedTask(task.id?.toString() ?? null);
         setDraggedTaskIndex(index);
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.setData("text/plain", index.toString());
