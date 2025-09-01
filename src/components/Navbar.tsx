@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { useEffect, useState } from "react";
 
 export default async function Navbar() {
   const viewOptions = ["Day"];
@@ -29,6 +30,16 @@ export default async function Navbar() {
     });
     // redirect("/signIn");
   }
+
+  // useEffect(() => {
+  //   async function getSession() {
+  //     const session = await auth.api.getSession({
+  //       headers: await headers(),
+  //     });
+  //     setSession(session);
+  //   }
+  //   getSession();
+  // }, [setSession]);
 
   return (
     <div

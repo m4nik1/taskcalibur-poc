@@ -68,6 +68,7 @@ export default function HomePageClient({ taskDB }: HomeProps) {
           setDraggedTask={setDraggedTask}
           setDraggedTaskIndex={setDraggedTaskIndex}
           dragStartInfo={dragStartInfo}
+          currentDate={currentDate}
         />
 
         <GantGrid

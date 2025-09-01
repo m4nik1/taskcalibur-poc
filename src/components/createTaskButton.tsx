@@ -3,16 +3,21 @@ import { TaskDB } from "../../types";
 interface CreateTaskProps {
   setTasks: React.Dispatch<React.SetStateAction<TaskDB[]>>;
   tasks: TaskDB[];
+  currentDate: Date;
 }
 
-export default function CreateTaskButton({ setTasks, tasks }: CreateTaskProps) {
+export default function CreateTaskButton({
+  setTasks,
+  tasks,
+  currentDate,
+}: CreateTaskProps) {
   async function createNewTask() {
     const newTask: TaskDB = {
       name: "",
-      startTime: new Date(), // Default start time
+      startTime: currentDate, // Default start time
       status: "Draft",
-      Duration: 1, // Default duration
-      EndTime: new Date(),
+      Duration: 60, // Default duration
+      EndTime: currentDate,
     };
     console.log("Making a new task");
     setTasks((prevTasks) => [...prevTasks, newTask]);
