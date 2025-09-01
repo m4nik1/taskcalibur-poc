@@ -55,7 +55,7 @@ export default function SignUpForm() {
       <h2 className="text-xl font-semibold">Create Account</h2>
 
       <Input ref={emailRef} type="email" placeholder="Email" />
-      <Input ref={nameRef} type="email" placeholder="name" />
+      <Input ref={nameRef} type="name" placeholder="name" />
       <Input ref={passwordRef} type="password" placeholder="Password" />
 
       <Button type="submit">Sign Up</Button>
