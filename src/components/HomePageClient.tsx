@@ -31,8 +31,8 @@ export default function HomePageClient({ taskDB }: HomeProps) {
     handleMouseUp,
     handleMouseDown,
   } = useGanttDrag({
-    tasks,
-    setTasks,
+    currentTasks,
+    setCurrentTasks,
     gridRef,
     HOUR_WIDTH_PX,
     START_HOUR_DISPLAY,
@@ -64,18 +64,17 @@ export default function HomePageClient({ taskDB }: HomeProps) {
       <div className="flex-1 flex bg-gray-50">
         <TaskList
           tasks={currentTasks}
-          setTasks={setTasks}
+          setTasks={setCurrentTasks}
           setDraggedTask={setDraggedTask}
           setDraggedTaskIndex={setDraggedTaskIndex}
           dragStartInfo={dragStartInfo}
         />
 
         <GantGrid
-          setTasks={setTasks}
+          setTasks={setCurrentTasks}
           tasks={currentTasks}
           gridRef={gridRef}
           handleMouseDown={handleMouseDown}
-          handleMouseUp={handleMouseUp}
           dragStartInfo={dragStartInfo}
           draggedTask={draggedTask}
           navigateDate={navigateDate}

@@ -24,8 +24,8 @@ interface DragEndInfo {
 }
 
 interface UseGanttDragProps {
-  tasks: TaskDB[];
-  setTasks: React.Dispatch<React.SetStateAction<TaskDB[]>>;
+  currentTasks: TaskDB[];
+  setCurrentTasks: React.Dispatch<React.SetStateAction<TaskDB[]>>;
   gridRef: RefObject<HTMLDivElement>;
   HOUR_WIDTH_PX: number;
   START_HOUR_DISPLAY: number;
@@ -33,8 +33,8 @@ interface UseGanttDragProps {
 }
 
 export function useGanttDrag({
-  tasks,
-  setTasks,
+  currentTasks,
+  setCurrentTasks,
   gridRef,
   HOUR_WIDTH_PX,
   START_HOUR_DISPLAY,
@@ -58,7 +58,7 @@ export function useGanttDrag({
       const isResizer = target.classList.contains("task-resizer");
 
       if (taskId && gridRef.current) {
-        const task = tasks.find((t) => t.id?.toString() == taskId);
+        const task = currentTasks.find((t) => t.id?.toString() == taskId);
 
         if (task) {
           setIsDragging(true);
@@ -75,7 +75,7 @@ export function useGanttDrag({
         }
       }
     },
-    [tasks, gridRef]
+    [currentTasks, gridRef]
   );
 
   // When the mouse is moving just get the event's x and drag start x
@@ -90,7 +90,7 @@ export function useGanttDrag({
 
       setDragOffset(deltaHours);
 
-      setTasks((prev) =>
+      setCurrentTasks((prev) =>
         prev.map((task) => {
           if (task.id?.toString() == dragStartInfo.taskId) {
             if (dragStartInfo.isResizing) {
@@ -104,11 +104,12 @@ export function useGanttDrag({
               const newEndTime = new Date(
                 task.startTime.getTime() + newDurationMinutes * 60 * 1000
               );
-              return {
+              updatedTask.current = {
                 ...task,
                 Duration: newDurationMinutes,
                 EndTime: newEndTime,
               };
+              return updatedTask.current;
             } else {
               // --- Moving ---
               let newStartHour = dragStartInfo.initialStartHour! + dragOffset;
@@ -149,15 +150,16 @@ export function useGanttDrag({
       gridRef,
       START_HOUR_DISPLAY,
       dragOffset,
-      setTasks,
+      setCurrentTasks,
       END_HOUR_DISPLAY,
     ]
   );
 
   // When the mouse is up we will stop the dragging and set the task stuff
   const handleMouseUp = useCallback(async () => {
-    if (isDragging && dragStartInfo) {
-    }
+    // if (isDragging && dragStartInfo) {
+
+    // }
     if (updatedTask.current) {
       console.log("updated Task", updatedTask);
       const response = await fetch("/api/updateTask", {
@@ -172,10 +174,10 @@ export function useGanttDrag({
 
   useEffect(() => {
     document.addEventListener("mousemove", handleMouseMove);
-    // document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mouseup", handleMouseUp);
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
-      // document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [handleMouseMove, handleMouseUp]);
 

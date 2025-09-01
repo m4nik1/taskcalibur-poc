@@ -13,7 +13,6 @@ interface GantTaskProps {
   task: TaskDB;
   index: number;
   handleMouseDown: (e: React.MouseEvent) => void;
-  handleMouseUp: (e: React.MouseEvent) => void;
   dragStartInfo: DragStartInfo | null;
 }
 
@@ -21,7 +20,6 @@ export default function GantTask({
   task,
   index,
   handleMouseDown,
-  handleMouseUp,
   dragStartInfo,
 }: GantTaskProps) {
   const HOUR_WIDTH_PX = 70; // Pixels per hour
@@ -43,7 +41,6 @@ export default function GantTask({
         transition: isActive ? "none" : "transform 0.2s ease",
       }}
       onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
     >
       <span className="truncate pointer-events-none select-none">
         {task.name}

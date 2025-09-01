@@ -19,7 +19,6 @@ interface gantGridProps {
   tasks: TaskDB[];
   gridRef: RefObject<HTMLDivElement>;
   handleMouseDown: (e: React.MouseEvent) => void;
-  handleMouseUp: (e: React.MouseEvent) => void;
   dragStartInfo: DragStartInfo | null;
   draggedTask: string | null;
   navigateDate: (direction: number) => void;
@@ -31,7 +30,6 @@ export default function GantGrid({
   tasks,
   gridRef,
   handleMouseDown,
-  handleMouseUp,
   dragStartInfo,
   navigateDate,
   currentDate,
@@ -144,7 +142,6 @@ export default function GantGrid({
               task={task}
               index={index}
               handleMouseDown={handleMouseDown}
-              handleMouseUp={handleMouseUp}
               dragStartInfo={dragStartInfo}
             />
           ))}
