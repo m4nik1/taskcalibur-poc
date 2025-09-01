@@ -20,7 +20,7 @@ export default function TaskItem({
   setTasks,
 }: TaskItemProps) {
   const [completeCheck, setCheck] = useState(false);
-  const taskName = useRef(task.name);
+  const taskName = useRef<HTMLInputElement>(null);
 
   function taskComplete(complete: boolean) {
     const newTasks = [...tasks];
@@ -34,7 +34,7 @@ export default function TaskItem({
     if (e?.code == "Enter") {
       try {
         const newTasks = [...tasks];
-        task.name = taskName.current.valueOf.toString();
+        task.name = taskName.current?.value || "";
         newTasks.splice(index, 1, task);
         task.id = 20000;
 
@@ -48,7 +48,10 @@ export default function TaskItem({
         console.log("We have an error");
         console.error(err);
       }
-    } else if (e.code == "Backspace" && taskName.current.value == "") {
+    } else if (
+      e?.code == "Backspace" &&
+      (taskName.current?.value || "") === ""
+    ) {
       console.log("Deleting task");
       const newTasks = [...tasks];
       // setTasks(newTasks.splice(index, 1, task))
@@ -82,7 +85,7 @@ export default function TaskItem({
       style={{ height: "40px" }}
       draggable
       onDragStart={(e) => {
-        setDraggedTask(task.id);
+        setDraggedTask(task.id ?? null);
         setDraggedTaskIndex(index);
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.setData("text/plain", index.toString());
@@ -105,9 +108,8 @@ export default function TaskItem({
       />
       <div className="flex-grow min-w-0">
         <input
-          className={`text-sm font-medium text-gray-900 truncate ${
-            completeCheck ? "line-through" : ""
-          }`}
+          className={`text-sm font-medium text-gray-900 truncate ${completeCheck ? "line-through" : ""
+            }`}
           onKeyDown={confirmTask}
           placeholder="New Task"
           defaultValue={task.name}

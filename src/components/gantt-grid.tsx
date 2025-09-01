@@ -5,6 +5,14 @@ import { TaskDB } from "../../types";
 import { getHourFromX, getXFromHour } from "@/lib/utils";
 import GantTask from "./gantTask";
 import DateNavigation from "./DateNavigation";
+interface DragStartInfo {
+  startX: number;
+  startHour: number;
+  taskId: string | null;
+  isResizing: boolean;
+  initialDuration?: number;
+  initialStartHour?: number;
+}
 
 interface gantGridProps {
   setTasks: React.Dispatch<SetStateAction<TaskDB[]>>;
@@ -12,7 +20,7 @@ interface gantGridProps {
   gridRef: RefObject<HTMLDivElement>;
   handleMouseDown: (e: React.MouseEvent) => void;
   handleMouseUp: (e: React.MouseEvent) => void;
-  dragStartInfo: { taskId: number | null } | null;
+  dragStartInfo: DragStartInfo | null;
   draggedTask: string | null;
   navigateDate: (direction: number) => void;
   currentDate: Date;

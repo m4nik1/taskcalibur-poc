@@ -1,12 +1,20 @@
 import { TaskDB } from "../../types";
-import { getXFromHour } from "@/lib/utils";
+
+interface DragStartInfo {
+  startX: number;
+  startHour: number;
+  taskId: string | null;
+  isResizing: boolean;
+  initialDuration?: number;
+  initialStartHour?: number;
+}
 
 interface GantTaskProps {
   task: TaskDB;
   index: number;
   handleMouseDown: (e: React.MouseEvent) => void;
   handleMouseUp: (e: React.MouseEvent) => void;
-  dragStartInfo: { taskId: number | null } | null;
+  dragStartInfo: DragStartInfo | null;
 }
 
 export default function GantTask({
