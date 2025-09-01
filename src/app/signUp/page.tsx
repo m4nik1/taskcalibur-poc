@@ -8,17 +8,19 @@ import { authClient } from "@/lib/auth-client";
 export default function SignUpForm() {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     const email = emailRef.current?.value || "";
     const password = passwordRef.current?.value || "";
+    const name = nameRef.current?.value || "";
 
     const { data, error } = await authClient.signUp.email(
       {
         email: email,
-        name: "m4nik1",
+        name: name,
         password: password,
         callbackURL: "/signIn",
       },
@@ -51,6 +53,7 @@ export default function SignUpForm() {
       <h2 className="text-xl font-semibold">Create Account</h2>
 
       <Input ref={emailRef} type="email" placeholder="Email" />
+      <Input ref={nameRef} type="email" placeholder="name" />
       <Input ref={passwordRef} type="password" placeholder="Password" />
 
       <Button type="submit">Sign Up</Button>
