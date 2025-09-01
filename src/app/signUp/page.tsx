@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { redirect } from "next/navigation";
 
 export default function SignUpForm() {
   const emailRef = useRef<HTMLInputElement>(null);
@@ -33,6 +34,7 @@ export default function SignUpForm() {
         onSuccess: (ctx) => {
           console.log("Login worked!");
           console.log("ctx: ", ctx);
+          redirect("/");
         },
         onError: (ctx) => {
           // display the error message
