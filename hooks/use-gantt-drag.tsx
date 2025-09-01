@@ -58,7 +58,7 @@ export function useGanttDrag({
       const isResizer = target.classList.contains("task-resizer");
 
       if (taskId && gridRef.current) {
-        const task = tasks.find((t) => t.id.toString() == taskId);
+        const task = tasks.find((t) => t.id?.toString() == taskId);
 
         if (task) {
           setIsDragging(true);
