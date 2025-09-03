@@ -111,7 +111,8 @@ export function useGanttDrag({
               };
               return updatedTask.current;
             } else {
-              // --- Moving ---
+              // --- Dragging ---
+              console.log("Moving Task: ", task);
               let newStartHour = dragStartInfo.initialStartHour! + dragOffset;
 
               newStartHour = Math.round(newStartHour * 4) / 4;

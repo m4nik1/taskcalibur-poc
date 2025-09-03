@@ -1,45 +1,32 @@
+"use client";
 import { Button } from "./ui/button";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-export default async function Navbar() {
+export default function Navbar() {
   const viewOptions = ["Day"];
   // "Week"];
 
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  // const session = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
+  const [userSession, setSession] = useState(null);
 
-  async function signOut() {
-    "use server";
-    await authClient.signOut({
-      fetchOptions: {
-        credentials: "include",
-        onSuccess: () => {
-          redirect("/signIn");
-        },
-        onError: (e) => {
-          console.log("We have an error: ", e);
-        },
-      },
-    });
-    // redirect("/signIn");
+  useEffect(() => {
+    async function getSession() {
+      const session = await fetch("/api/checkSession", { method: "GET" });
+      const resData = await session.json();
+      console.log("res data: ", resData.data);
+      setSession(resData.data);
+      console.log("user session status: ", userSession);
+    }
+    getSession();
+  }, [setSession]);
+
+  function signOut() {
+    console.log("Signing out");
   }
-
-  // useEffect(() => {
-  //   async function getSession() {
-  //     const session = await auth.api.getSession({
-  //       headers: await headers(),
-  //     });
-  //     setSession(session);
-  //   }
-  //   getSession();
-  // }, [setSession]);
 
   return (
     <div
@@ -71,7 +58,7 @@ export default async function Navbar() {
             </Button>
           ))}
         </div>
-        {!session ? (
+        {!userSession ? (
           <Button>
             <Link href="/signIn">Sign In</Link>
           </Button>

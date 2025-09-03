@@ -14,8 +14,8 @@ export default function CreateTaskButton({
   async function createNewTask() {
     const newTask: TaskDB = {
       name: "",
-      startTime: currentDate, // Default start time
-      status: "Draft",
+      startTime: currentDate,
+      status: "Scheduled",
       Duration: 60, // Default duration
       EndTime: currentDate,
     };

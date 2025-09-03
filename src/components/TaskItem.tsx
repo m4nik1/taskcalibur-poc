@@ -30,19 +30,23 @@ export default function TaskItem({
   }
 
   // Add update change to DB to fix the name of the task
-  function confirmTask(e: React.KeyboardEvent<HTMLInputElement> | undefined) {
+  async function confirmTask(
+    e: React.KeyboardEvent<HTMLInputElement> | undefined
+  ) {
     if (e?.code == "Enter") {
       try {
         const newTasks = [...tasks];
+        console.log(newTasks);
         task.name = taskName.current?.value || "";
-        newTasks.splice(index, 1, task);
-        task.id = 20000;
 
-        fetch("/api/addTask", {
+        // This fixes the default value being set for the task ID
+        const confirmedTask = await fetch("/api/addTask", {
           method: "POST",
           body: JSON.stringify(task),
         });
 
+        console.log("Confirmed: ", confirmedTask);
+        newTasks.splice(index, 1, task);
         setTasks(newTasks);
       } catch (err) {
         console.log("We have an error");
@@ -108,8 +112,9 @@ export default function TaskItem({
       />
       <div className="flex-grow min-w-0">
         <input
-          className={`text-sm font-medium text-gray-900 truncate ${completeCheck ? "line-through" : ""
-            }`}
+          className={`text-sm font-medium text-gray-900 truncate ${
+            completeCheck ? "line-through" : ""
+          }`}
           onKeyDown={confirmTask}
           placeholder="New Task"
           defaultValue={task.name}

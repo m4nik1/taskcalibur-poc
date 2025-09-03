@@ -6,10 +6,11 @@ export async function POST(req : NextRequest) {
        console.log("Request has been received!")
        const reqData = await req.json();
 
-       delete reqData.id
-        console.log("Req data has been recieved: ", reqData);
+       delete reqData.id;
+       console.log("Req data has been recieved: ", reqData);
 
         const newTask = await prisma.userTasks.create({ data: reqData });
+        console.log("Got new task back: ", newTask)
 
         return NextResponse.json({ message: "Task has been added" }, { status: 201 })
     } catch(err) {
