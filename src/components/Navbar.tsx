@@ -38,7 +38,7 @@ export default function Navbar() {
           <Calendar className="w-5 h-5 text-white"></Calendar>
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Taskcalibur</h1>
+          <h1 className="text-xl font-bold text-gray-900">Task AI</h1>
         </div>
       </div>
 
