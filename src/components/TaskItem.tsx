@@ -20,7 +20,7 @@ export default function TaskItem({
   setTasks,
 }: TaskItemProps) {
   const [completeCheck, setCheck] = useState(false);
-  const taskName = useRef(task.name);
+  const taskName = useRef<HTMLInputElement>(null);
 
   function taskComplete(complete: boolean) {
     const newTasks = [...tasks];
@@ -37,7 +37,7 @@ export default function TaskItem({
       try {
         const newTasks = [...tasks];
         console.log(newTasks);
-        task.name = taskName.current?.valueOf.toString() || "";
+        task.name = taskName.current?.value || "";
 
         // This fixes the default value being set for the task ID
         const confirmedTask = await fetch("/api/addTask", {
@@ -122,7 +122,6 @@ export default function TaskItem({
           onKeyDown={confirmTask}
           placeholder="New Task"
           defaultValue={task.name}
-          // @ts-ignore
           ref={taskName}
         />
         <div className="flex items-center text-xs text-gray-500 mt-0.5">
