@@ -15,9 +15,8 @@ export async function POST(req : NextRequest) {
                 id: true,
             }, 
         });
-        console.log("Got new task back: ", taskID)
 
-        return NextResponse.json({ message: "Task has been added" }, { status: 201 })
+        return NextResponse.json({ data: taskID.id }, { status: 201 });
     } catch(err) {
         console.error(err)
         

@@ -20,7 +20,7 @@ export default function TaskItem({
   setTasks,
 }: TaskItemProps) {
   const [completeCheck, setCheck] = useState(false);
-  const taskName = useRef<HTMLInputElement>(null);
+  const taskName = useRef<HTMLInputElement>(task.name);
 
   function taskComplete(complete: boolean) {
     const newTasks = [...tasks];
@@ -45,9 +45,13 @@ export default function TaskItem({
           body: JSON.stringify(task),
         });
 
-        console.log("Confirmed: ", confirmedTask);
+        const taskID = await confirmedTask.json()
+
+        console.log("Confirmed: ", taskID.data);
+        task.id = taskID.data
         newTasks.splice(index, 1, task);
         setTasks(newTasks);
+        console.log("tasks: ", tasks)
       } catch (err) {
         console.log("We have an error");
         console.error(err);

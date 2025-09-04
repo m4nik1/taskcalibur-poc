@@ -52,6 +52,7 @@ export default function HomePageClient({ taskDB }: HomeProps) {
   const navigateDate = (direction: number) => {
     const newDate = new Date(currentDate);
     newDate.setDate(currentDate.getDate() + direction);
+    console.log("Tasks are filtered by date: ", currentTasks)
     setCurrentDate(newDate);
   };
 

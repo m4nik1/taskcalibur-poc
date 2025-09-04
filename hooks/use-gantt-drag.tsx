@@ -112,7 +112,6 @@ export function useGanttDrag({
               return updatedTask.current;
             } else {
               // --- Dragging ---
-              console.log("Moving Task: ", task);
               let newStartHour = dragStartInfo.initialStartHour! + dragOffset;
 
               newStartHour = Math.round(newStartHour * 4) / 4;
@@ -161,8 +160,8 @@ export function useGanttDrag({
     // if (isDragging && dragStartInfo) {
 
     // }
+    console.log("updated Task: ", updatedTask);
     if (updatedTask.current) {
-      console.log("updated Task", updatedTask);
       const response = await fetch("/api/updateTask", {
         method: "POST",
         body: JSON.stringify(updatedTask.current),
